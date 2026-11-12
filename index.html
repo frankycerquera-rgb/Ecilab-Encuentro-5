@@ -1,0 +1,1209 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Taller de Ingenieros Ecilab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: mesa de trabajo de ingeniería — barra de pestañas fija con la ruta del día, una estación por vista */
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --ink:#16213a; --muted:#56627a; --line:#d5dbe5;
+  --accent:#d98a00; --accent-ink:#ffffff; --soft:#fff3dc;
+  --red:#d33a2c; --yellow:#e0a800; --green:#1f9d55; --blue:#2f6fd6;
+  --code-bg:#16213a; --code-ink:#e8edf6;
+  --f-display:"Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1626; --panel:#18223a; --ink:#e6ebf4; --muted:#9aa6bd; --line:#2b3753;
+  --accent:#f2a516; --accent-ink:#1b1300; --soft:#2d2511;
+  --red:#ff6b5c; --yellow:#ffd24a; --green:#44d17f; --blue:#7aa8ff;
+  --code-bg:#0a101d; --code-ink:#e8edf6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1626; --panel:#18223a; --ink:#e6ebf4; --muted:#9aa6bd; --line:#2b3753;
+  --accent:#f2a516; --accent-ink:#1b1300; --soft:#2d2511;
+  --red:#ff6b5c; --yellow:#ffd24a; --green:#44d17f; --blue:#7aa8ff;
+  --code-bg:#0a101d; --code-ink:#e8edf6; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px}
+header.top{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.top .wrap{padding-block:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;letter-spacing:.02em;font-size:18px;margin-right:auto}
+.brand small{display:block;font-family:var(--f-body);font-weight:400;font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs a{font-family:var(--f-display);font-weight:600;font-size:14px;text-decoration:none;color:var(--ink);padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+nav.tabs a.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav.tabs a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,5vw,40px)}
+h2{font-size:26px}
+h3{font-size:19px}
+section.view{display:flex;flex-direction:column;gap:18px}
+.lead{font-size:19px;color:var(--muted);max-width:65ch;margin:0}
+p{margin:0;max-width:68ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.eyebrow{font-family:var(--f-display);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+ul.clean{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.note{background:var(--soft);border-radius:10px;padding:12px 14px;border-left:4px solid var(--accent)}
+.agenda{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.agenda .row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:12px 16px;border-top:1px solid var(--line);align-items:center}
+.agenda .row:first-child{border-top:0}
+.agenda .hr{font-family:var(--f-mono);font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.agenda .row.brk{background:var(--bg);color:var(--muted)}
+.pill{font-family:var(--f-display);font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.pill.p{color:var(--blue);border-color:var(--blue)}
+.pill.e{color:var(--accent);border-color:var(--accent)}
+@media (max-width:560px){.agenda .row{grid-template-columns:1fr;gap:4px}}
+.data{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.datum{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.datum b{display:block;font-family:var(--f-mono);font-size:24px;font-variant-numeric:tabular-nums}
+.datum span{font-size:13px;color:var(--muted)}
+.code{background:var(--code-bg);color:var(--code-ink);font-family:var(--f-mono);font-size:14px;border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.7;white-space:pre}
+.code .k{color:#ffb84d}.code .n{color:#7fd1ff}.code .c{color:#8b97ad}
+.bad{color:#ff8a7a;font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:15px}
+.tscroll{overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-family:var(--f-display);font-weight:600}
+.caso{display:flex;flex-direction:column;gap:10px}
+.sym{font-weight:700}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts label{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--bg)}
+.opts input{margin-top:5px}
+.res{font-weight:700;min-height:1.5em}
+.res.ok{color:var(--green)}.res.no{color:var(--red)}
+button{font-family:var(--f-display);font-weight:600;font-size:15px;border:0;border-radius:8px;padding:9px 14px;background:var(--accent);color:var(--accent-ink);cursor:pointer;align-self:flex-start}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+input[type=number],input[type=text],select{font-family:var(--f-mono);font-size:16px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);max-width:100%}
+.digit{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.digit input{width:110px}
+.led{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin-right:6px}
+.led.r{background:var(--red)}.led.y{background:var(--yellow)}.led.g{background:var(--green)}
+.zone{display:flex;height:34px;border-radius:8px;overflow:hidden;font-family:var(--f-mono);font-size:13px;color:#fff;font-weight:600}
+.zone div{display:flex;align-items:center;justify-content:center;min-width:0}
+.check{display:flex;flex-direction:column;gap:6px}
+.check label{display:flex;gap:10px;align-items:flex-start}
+.check input{margin-top:5px;width:18px;height:18px}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.levels label{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;cursor:pointer;background:var(--bg)}
+.levels label:has(input:checked){border-color:var(--accent);background:var(--soft)}
+.levels b{font-family:var(--f-display)}
+.muted{color:var(--muted)}
+.locked{opacity:.55}
+@media (prefers-reduced-motion:no-preference){.res.ok{animation:pop .3s ease}}
+@keyframes pop{from{transform:scale(.96)}to{transform:none}}
+.game{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;overflow:hidden;min-height:420px}
+.gscreen{display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+.g-hero{display:flex;justify-content:center}
+.g-art{width:100%;max-width:420px;height:auto}
+@media (prefers-reduced-motion:no-preference){
+ .g-car{animation:drive 3.5s ease-in-out infinite}
+ .g-bar{transform-origin:70px 62px;animation:gate 3.5s ease-in-out infinite}
+}
+@keyframes drive{0%,100%{transform:translateX(0)}50%{transform:translateX(-60px)}}
+@keyframes gate{0%,30%{transform:rotate(0)}50%,80%{transform:rotate(-70deg)}100%{transform:rotate(0)}}
+.g-label{font-family:var(--f-display);font-weight:600}
+#gName{font-family:var(--f-body);font-size:18px;width:100%;max-width:420px}
+.g-big{font-size:20px;padding:12px 26px}
+.g-hud{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-family:var(--f-display);font-size:15px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.g-hud b{font-variant-numeric:tabular-nums}
+.g-snd{margin-left:auto;font-size:13px;padding:5px 10px}
+.g-hearts{color:var(--red);letter-spacing:3px;font-size:18px}
+.g-hearts .lost{color:var(--line)}
+.g-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.g-lv{all:unset;box-sizing:border-box;cursor:pointer;border:2px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.g-lv:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.g-lv:hover:not([disabled]){border-color:var(--accent)}
+.g-lv[disabled]{cursor:not-allowed;opacity:.5}
+.g-lv .num{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.g-lv .t{font-family:var(--f-display);font-weight:700;font-size:18px}
+.g-lv .s{font-size:14px;color:var(--muted)}
+.g-lv .st{font-size:20px;color:var(--accent);letter-spacing:2px}
+.g-lv.done{border-color:var(--green)}
+.g-progress{height:8px;background:var(--bg);border-radius:99px;overflow:hidden}
+.g-progress div{height:100%;background:var(--accent);width:0;transition:width .3s}
+.g-q{font-family:var(--f-display);font-size:22px;font-weight:600;line-height:1.3;max-width:60ch}
+.g-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.g-opt{all:unset;box-sizing:border-box;cursor:pointer;border:2px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--bg);font-size:17px;line-height:1.35;display:flex;gap:10px;align-items:center}
+.g-opt:hover:not([disabled]){border-color:var(--accent);transform:translateY(-1px)}
+.g-opt:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.g-opt[disabled]{cursor:default}
+.g-opt.right{border-color:var(--green);background:color-mix(in srgb,var(--green) 14%,var(--bg))}
+.g-opt.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 14%,var(--bg))}
+.g-opt .k{font-family:var(--f-mono);font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.g-fb{border-radius:12px;padding:12px 16px;font-size:17px}
+.g-fb.ok{background:color-mix(in srgb,var(--green) 16%,var(--panel));border:1px solid var(--green)}
+.g-fb.no{background:color-mix(in srgb,var(--red) 12%,var(--panel));border:1px solid var(--red)}
+.g-code{background:var(--code-bg);color:var(--code-ink);font-family:var(--f-mono);font-size:15px;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:2px;overflow-x:auto}
+.g-line{all:unset;box-sizing:border-box;cursor:pointer;padding:7px 10px;border-radius:7px;white-space:pre;display:flex;gap:12px}
+.g-line .ln{color:#8b97ad;min-width:1.4em;text-align:right}
+.g-line:hover:not([disabled]){background:rgba(255,255,255,.08)}
+.g-line:focus-visible{outline:2px solid #ffb84d}
+.g-line.right{background:rgba(68,209,127,.28)}
+.g-line.wrong{background:rgba(255,107,92,.3)}
+.g-line.cm{cursor:default;color:#8b97ad}
+.g-track{width:100%;height:auto;max-width:640px}
+.g-stars{font-size:46px;color:var(--accent);letter-spacing:6px}
+.g-badge{font-family:var(--f-display);font-weight:700;align-self:flex-start;border:2px dashed var(--accent);border-radius:12px;padding:8px 14px;color:var(--accent)}
+.g-final{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.g-score{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--bg)}
+.g-score b{display:block;font-family:var(--f-display);font-size:34px;font-variant-numeric:tabular-nums}
+.g-score span{color:var(--muted);font-size:14px}
+#confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+@media (prefers-reduced-motion:no-preference){.g-shake{animation:shake .35s}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+textarea{width:100%;font-family:var(--f-body);font-size:16px;line-height:1.5;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);resize:vertical}
+.wc{font-size:13px}
+.inf{border:2px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.inf.okk{border-color:var(--green)}.inf.bad{border-color:var(--red)}
+.inf-status{font-family:var(--f-display);font-weight:700;font-size:22px}
+.inf-status.okk{color:var(--green)}.inf-status.bad{color:var(--red)}
+.inf ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.inf li{display:flex;gap:8px;align-items:flex-start}
+.inf li .m{font-weight:700;min-width:1.2em}
+.inf li.y .m{color:var(--green)}.inf li.n .m{color:var(--red)}
+.inf .pend{background:color-mix(in srgb,var(--red) 10%,var(--panel));border:1px solid var(--red);border-radius:10px;padding:10px 14px}
+.inf blockquote{margin:0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--panel);white-space:pre-wrap;font-size:15px}
+
+.codeL{white-space:normal;padding:10px 0;line-height:1.6;font-size:14px}
+.cl{display:flex;gap:14px;white-space:pre;padding:0 16px 0 0;min-width:max-content}
+.cl .lnum{color:#6f7b92;min-width:2.2em;text-align:right;user-select:none;flex:none}
+.cl.nuevo{background:rgba(242,165,22,.2);box-shadow:inset 4px 0 0 #f2a516}
+.cl.nuevo .ltx::after{content:"   ◀ NUEVO";color:#f2a516;font-weight:700}
+.tc{color:#8b97ad}.ts{color:#9be28f}.tk{color:#ffb84d;font-weight:600}.tn{color:#7fd1ff}
+.tbad{background:#ff5a47;color:#fff;border-radius:4px;padding:0 4px;font-weight:700}
+.tblank{background:#ffd24a;color:#3a2a00;border-radius:4px;padding:0 6px;font-weight:700}
+.caso .cl{white-space:pre-wrap;min-width:0;overflow-wrap:anywhere}
+.caso .codeL{overflow-x:visible}
+details.card summary{cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:17px}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">Taller de Ingenieros<small>Ecilab Software 8° · Encuentro 5 de 5 · Cierre</small></div>
+  <nav class="tabs" id="tabs">
+    <a href="#inicio">Inicio</a>
+    <a href="#juego">Juego</a>
+    <a href="#codigo">Código base</a>
+    <a href="#detective">1 · Detective</a>
+    <a href="#piensa">2 · Piensa como Arduino</a>
+    <a href="#reto">3 · Reto final</a>
+    <a href="#entrega">4 · Cierre y entrega</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<!-- INICIO -->
+<section class="view" id="v-inicio">
+  <div class="eyebrow">Encuentro final de la rotación</div>
+  <h1>Hoy demuestran que son ingenieros</h1>
+  <p class="lead">Van a reparar circuitos dañados, a predecir lo que hace el Arduino y a mejorar su parqueadero inteligente. Todo se prueba dos veces: primero en Tinkercad y después con el circuito real en la protoboard. Al final cuentan qué aprendieron y qué otra solución inventarían.</p>
+
+  <div class="card">
+    <h3>Paso 0: saquen sus datos personales</h3>
+    <p>Escriban los <b>dos últimos números de su documento de identidad</b>. Con ellos la guía les da sus zonas, ángulos y tiempo. Cada estudiante tiene datos diferentes, así que copiar no sirve.</p>
+    <div class="digit">
+      <input type="number" id="dig" min="0" max="99" placeholder="Ej: 47" aria-label="Dos últimos números del documento">
+      <button id="digBtn">Ver mis datos</button>
+    </div>
+    <div id="misDatos" hidden>
+      <div class="data" id="dataBox"></div>
+      <p class="muted" style="margin-top:10px">Anótenlos en la primera página del Word. El código base, la estación 2 y el reto usan estos números.</p>
+    </div>
+  </div>
+
+  <h2>Ruta del día</h2>
+  <p class="muted">Avancen a su ritmo, en este orden. Lo importante es que cada paso quede bien hecho y probado.</p>
+  <div class="agenda">
+    <div class="row"><span><b>Arranque.</b> Saquen sus datos, abran Tinkercad y recojan el kit (Arduino, protoboard, LED, resistencias y sensor). El servo real es uno solo y está en la mesa del profe.</span><span class="pill">Preparación</span></div>
+    <div class="row"><span><b>Juego: Misión Parqueadero.</b> Siete niveles para recordar lo aprendido: Arduino, programación, conexiones y el parqueadero. Ganan puntos, estrellas e insignias.</span><span class="pill e">Repaso</span></div>
+    <div class="row"><span><b>Código base.</b> Revisen que su parqueadero en Tinkercad quede igual al de referencia y pase las 3 pruebas.</span><span class="pill p">Tinkercad</span></div>
+    <div class="row"><span><b>Estación 1: Detective de fallas.</b> Encuentran la falla, la reparan en Tinkercad y montan una en el circuito real.</span><span class="pill p">Tinkercad + real</span></div>
+    <div class="row brk"><span>Descanso</span></div>
+    <div class="row"><span><b>Estación 2: Piensa como el Arduino.</b> Predicen en el cuaderno, comprueban en Tinkercad y miden con el sensor real y una regla.</span><span class="pill e">Ejercicio + real</span></div>
+    <div class="row"><span><b>Estación 3: Reto final.</b> Parqueadero 2.0: primero en Tinkercad, después cargado al Arduino real.</span><span class="pill p">Tinkercad + real</span></div>
+    <div class="row"><span><b>Cierre.</b> Reflexión sobre lo aprendido, propuesta de otra solución y entrega en Classroom.</span><span class="pill">Reflexión</span></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Antes de empezar</h3>
+      <ol class="steps">
+        <li>Abran Tinkercad con el correo institucional.</li>
+        <li>Creen un Word llamado <b>APELLIDO_NOMBRE_CierreEcilab</b>.</li>
+        <li>Tengan a mano su proyecto del parqueadero del encuentro 4.</li>
+        <li>Revisen que el kit esté completo y el cable USB funcione.</li>
+        <li>Avancen por las pestañas en orden: Juego, Código base, 1, 2, 3 y 4.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Reglas</h3>
+      <ul class="clean">
+        <li>En Tinkercad pongan una <b>Nota con nombre y apellido</b>. Debe verse en todas las capturas.</li>
+        <li>Cada respuesta usa <b>sus datos</b> y explica <b>por qué</b>.</li>
+        <li>Si dos trabajos son iguales, ninguno cuenta.</li>
+        <li>Si se atascan, relean la estación y pregunten al compañero <b>cómo</b> lo pensó, no la respuesta.</li>
+        <li>En el circuito real, <b>desconecten el USB</b> antes de cambiar cables.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="note"><b>Recuerden las conexiones clave:</b> pin → resistencia → pata larga (+) del LED → pata corta (−) → GND. LED: rojo pin 2, amarillo pin 3, verde pin 4, blanco (barrera) pin 5. Ultrasonido: TRIG al pin 7 y ECHO al pin 6. Servo: señal al pin 9, rojo a 5V, café a GND. Todo el detalle está en <a href="#codigo">Código base</a>.</p>
+  <button onclick="go('juego')">Empezar con el juego →</button>
+</section>
+
+<!-- JUEGO -->
+<section class="view" id="v-juego" hidden>
+  <div class="eyebrow">Para empezar · Juego de repaso</div>
+  <h1>Misión Parqueadero</h1>
+  <p class="lead">Siete niveles para recordar todo lo que aprendieron: el Arduino, la programación, las conexiones y el parqueadero. No hay reloj: piensen cada respuesta. Si se equivocan, la guía les explica por qué y siguen aprendiendo.</p>
+
+  <div class="game" id="game">
+    <!-- pantalla de inicio -->
+    <div id="g-start" class="gscreen">
+      <div class="g-hero">
+        <svg viewBox="0 0 320 120" class="g-art" aria-hidden="true">
+          <rect x="0" y="92" width="320" height="6" rx="3" fill="var(--line)"/>
+          <rect x="18" y="52" width="34" height="40" rx="5" fill="var(--ink)"/>
+          <circle cx="29" cy="64" r="6" fill="var(--panel)"/><circle cx="43" cy="64" r="6" fill="var(--panel)"/>
+          <g class="g-bar"><rect x="70" y="58" width="120" height="8" rx="4" fill="var(--accent)"/></g>
+          <circle cx="70" cy="62" r="7" fill="var(--ink)"/>
+          <g class="g-car"><rect x="220" y="62" width="70" height="24" rx="8" fill="var(--blue)"/><rect x="234" y="50" width="38" height="16" rx="6" fill="var(--blue)"/><circle cx="236" cy="88" r="7" fill="var(--ink)"/><circle cx="276" cy="88" r="7" fill="var(--ink)"/></g>
+          <circle cx="110" cy="24" r="8" fill="var(--red)"/><circle cx="135" cy="24" r="8" fill="var(--yellow)"/><circle cx="160" cy="24" r="8" fill="var(--green)"/>
+        </svg>
+      </div>
+      <label for="gName" class="g-label">Nombre y apellido</label>
+      <input type="text" id="gName" placeholder="Ej: Sara Gómez" autocomplete="off">
+      <button id="gGo" class="g-big">Jugar</button>
+      <p class="muted">Al final aparece su resultado. Tomen captura y péguenla en la primera página del Word.</p>
+    </div>
+
+    <!-- mapa de niveles -->
+    <div id="g-map" class="gscreen" hidden>
+      <div class="g-hud"><span>👤 <b id="hName"></b></span><span>⭐ <b id="hXP">0</b> puntos</span><button class="ghost g-snd" id="gSnd" aria-pressed="true">Sonido: sí</button></div>
+      <div class="g-levels" id="gLevels"></div>
+      <button id="gFinish" class="g-big" hidden>Ver mi resultado</button>
+    </div>
+
+    <!-- pregunta -->
+    <div id="g-play" class="gscreen" hidden>
+      <div class="g-hud">
+        <span id="pLevel"></span>
+        <span class="g-hearts" id="pHearts" aria-label="Vidas"></span>
+        <span>🔥 Racha <b id="pStreak">0</b></span>
+        <span>⭐ <b id="pXP">0</b></span>
+      </div>
+      <div class="g-progress"><div id="pBar"></div></div>
+      <div class="g-q" id="pQ"></div>
+      <div id="pVisual"></div>
+      <div class="g-opts" id="pOpts"></div>
+      <div class="g-fb" id="pFb" hidden></div>
+      <button id="pNext" hidden>Siguiente</button>
+    </div>
+
+    <!-- nivel completo / perdido -->
+    <div id="g-end" class="gscreen" hidden>
+      <div class="g-stars" id="eStars"></div>
+      <h2 id="eTitle"></h2>
+      <p id="eMsg" class="lead"></p>
+      <div class="g-badge" id="eBadge"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button id="eRetry" class="ghost">Repetir nivel</button>
+        <button id="eMap">Volver al mapa</button>
+      </div>
+    </div>
+
+    <!-- resultado final -->
+    <div id="g-result" class="gscreen" hidden>
+      <div class="eyebrow">Resultado de Misión Parqueadero</div>
+      <h2 id="rName"></h2>
+      <div class="g-final">
+        <div class="g-score"><b id="rPct"></b><span>aciertos al primer intento</span></div>
+        <div class="g-score"><b id="rLevel"></b><span>nivel alcanzado</span></div>
+        <div class="g-score"><b id="rXP"></b><span>puntos</span></div>
+      </div>
+      <div class="tscroll"><table id="rTable"></table></div>
+      <p class="muted" id="rStamp"></p>
+      <p class="note">Tomen captura de esta pantalla y péguenla en el Word. Después sigan con la <a href="#detective">Estación 1</a>.</p>
+      <button class="ghost" id="rBack">Volver al mapa para mejorar</button>
+    </div>
+    <canvas id="confetti" aria-hidden="true"></canvas>
+  </div>
+</section>
+
+<!-- CODIGO -->
+<section class="view" id="v-codigo" hidden>
+  <div class="eyebrow">Referencia · Úsenla en todas las estaciones</div>
+  <h1>Código base del parqueadero</h1>
+  <p class="lead">Este es el programa del parqueadero inteligente con sus datos, en código de texto. Antes de las estaciones, revisen que su proyecto de Tinkercad quede igual a este y que pase las tres pruebas de abajo.</p>
+  <div id="needDigitC" class="note">Primero saquen sus datos en <a href="#inicio">Inicio</a>. El código usa sus números.</div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>1 · Componentes en Tinkercad</h3>
+      <ul class="clean">
+        <li>Arduino Uno R3 y una placa de pruebas.</li>
+        <li><b>Sensor de distancia ultrasónico de 4 pines</b> (VCC, TRIG, ECHO, GND). No usen el de 3 pines.</li>
+        <li>4 LED: rojo, amarillo, verde y blanco (el blanco es el aviso de barrera abierta).</li>
+        <li>4 resistencias de 220 Ω, una por LED.</li>
+        <li>Micro servo.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>2 · Conexiones</h3>
+      <div class="tscroll"><table>
+        <tr><th>Componente</th><th>Conexión al Arduino</th></tr>
+        <tr><td>Sensor VCC · GND</td><td>5V · GND</td></tr>
+        <tr><td>Sensor TRIG · ECHO</td><td>Pin 7 · Pin 6</td></tr>
+        <tr><td><span class="led r"></span>LED rojo</td><td>Pin 2 → 220 Ω → pata larga</td></tr>
+        <tr><td><span class="led y"></span>LED amarillo</td><td>Pin 3 → 220 Ω → pata larga</td></tr>
+        <tr><td><span class="led g"></span>LED verde</td><td>Pin 4 → 220 Ω → pata larga</td></tr>
+        <tr><td>LED blanco (barrera)</td><td>Pin 5 → 220 Ω → pata larga</td></tr>
+        <tr><td>Servo señal · potencia · tierra</td><td>Pin 9 · 5V · GND</td></tr>
+      </table></div>
+      <p class="muted">Las patas cortas de los 4 LED van a GND.</p>
+    </div>
+  </div>
+
+  <div id="codigoBody" hidden>
+    <div class="card">
+      <h3>3 · El programa</h3>
+      <p>En Tinkercad abran <b>Código</b>, elijan <b>Texto</b> en la lista de arriba y escriban o comparen su programa con este. Los números en azul son sus datos.</p>
+      <div id="codText"></div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button id="codCopy">Copiar código</button><span class="res" id="codCopyRes"></span></div>
+      <div class="grid2">
+        <div class="note"><b>setup()</b> se ejecuta una sola vez al encender: prepara los pines, el servo y el Monitor Serie.</div>
+        <div class="note"><b>loop()</b> se repite sin parar: mide, decide la zona con <b>if / else if / else</b> y actúa.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>4 · Pruebas de verificación</h3>
+      <p>Inicien la simulación, hagan clic en el sensor y arrastren el objeto a cada distancia. Su circuito debe hacer exactamente esto:</p>
+      <div class="tscroll"><table id="codTest"></table></div>
+      <p class="muted">Si alguna prueba no coincide, comparen línea por línea con el programa de arriba y revisen las conexiones. Errores comunes: falta un punto y coma, una llave { } sin cerrar o un número de pin distinto al del cable.</p>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Prueba real</div>
+      <h3>6 · Pasar el programa al Arduino real</h3>
+      <ol class="steps">
+        <li>Monten el circuito real con las mismas conexiones (sin servo: ese está en la mesa del profe).</li>
+        <li>Copien su código de Tinkercad (o el de la sección 3) o descárguenlo con el botón de <b>descargar código</b>.</li>
+        <li>Abran <b>Arduino IDE</b>, peguen el código y elijan <b>Herramientas → Placa → Arduino Uno</b> y el <b>Puerto</b> donde aparece el Arduino.</li>
+        <li>Pulsen <b>Subir</b> (flecha →) y esperen el mensaje «Subido».</li>
+        <li>Abran el <b>Monitor Serie</b> y elijan <b>9600 baudios</b>.</li>
+      </ol>
+    </div>
+  </div>
+  <button onclick="go('detective')">Seguir a la estación 1 →</button>
+</section>
+
+<!-- DETECTIVE -->
+<section class="view" id="v-detective" hidden>
+  <div class="eyebrow">Estación 1 · Tinkercad + circuito real</div>
+  <h1>Detective de fallas</h1>
+  <p class="lead">Un cliente reporta cinco parqueaderos que no funcionan. Para cada caso lean el síntoma, miren el circuito o el código y elijan cuál es la falla. Después la prueban en Tinkercad.</p>
+
+  <div class="card">
+    <h3>Qué hacer en cada caso</h3>
+    <ol class="steps">
+      <li>Lean el <b>síntoma</b> que reporta el cliente.</li>
+      <li>Revisen la tabla de conexiones o el código y busquen lo que está mal.</li>
+      <li>Elijan su respuesta y pulsen <b>Comprobar</b>.</li>
+      <li>En el Word llenen la tabla: <b>Caso · Síntoma · Causa · Cómo lo corregí</b>.</li>
+      <li>Elijan <b>3 casos</b> y repárenlos en Tinkercad: primero monten la falla, tomen captura; luego corríjanla y tomen otra captura.</li>
+    </ol>
+  </div>
+  <div id="casos" class="grid2"></div>
+  <div class="card">
+    <div class="eyebrow">Prueba real</div>
+    <h3>Ahora con el circuito de verdad</h3>
+    <ol class="steps">
+      <li>Elijan <b>uno</b> de los casos A, B o D y móntenlo <b>con la falla</b> en la protoboard real.</li>
+      <li>Conecten el USB y carguen el código. Observen: ¿pasa lo mismo que en Tinkercad?</li>
+      <li>Desconecten, corrijan la falla y vuelvan a probar.</li>
+      <li>Tomen dos fotos con el celular (con falla y corregido) y péguenlas en el Word.</li>
+      <li>Escriban una línea: <b>¿qué fue diferente entre la simulación y lo real?</b> (cables sueltos, LED que no se ve, servo que vibra…)</li>
+    </ol>
+    <p class="note">El caso C (servo) se hace solo en Tinkercad porque hay un solo servo real. El caso E tampoco se monta en real: sin resistencia el LED se puede quemar de verdad. Por eso Tinkercad sirve para probar sin dañar nada.</p>
+  </div>
+  <div class="card">
+    <h3>Así debe quedar la tabla en su Word</h3>
+    <div class="tscroll"><table>
+      <tr><th>Caso</th><th>Síntoma</th><th>Causa de la falla</th><th>Cómo lo corregí</th><th>Tinkercad</th><th>Real</th></tr>
+      <tr><td>A</td><td>El LED verde nunca prende</td><td class="muted">Escríbanla con sus palabras</td><td class="muted">Qué cambiaron y dónde</td><td class="muted">Sí / No + capturas</td><td class="muted">Sí / No + fotos</td></tr>
+    </table></div>
+  </div>
+  <button onclick="go('piensa')">Seguir a la estación 2 →</button>
+</section>
+
+<!-- PIENSA -->
+<section class="view" id="v-piensa" hidden>
+  <div class="eyebrow">Estación 2 · Cuaderno, Tinkercad y sensor real</div>
+  <h1>Piensa como el Arduino</h1>
+  <p class="lead">El Arduino no adivina: sigue las reglas al pie de la letra. Ustedes van a hacer lo mismo con papel y lápiz, y luego comprueban en Tinkercad si acertaron.</p>
+  <div id="needDigit" class="note">Primero saquen sus datos en <a href="#inicio">Inicio</a>.</div>
+
+  <div id="piensaBody" hidden>
+    <div class="card">
+      <h3>El programa del parqueadero (con sus datos)</h3>
+      <div id="codeP"></div>
+      <div id="zonaBar"></div>
+      <p class="muted">Ojo: <b>"menor que"</b> no incluye el borde. Si la distancia es exactamente igual al límite, la condición es falsa.</p>
+    </div>
+
+    <div class="card">
+      <h3>Parte A · Predicción en el cuaderno</h3>
+      <p>Para cada distancia escriban en el cuaderno <b>qué LED prende</b> y <b>en qué ángulo queda la barrera</b>. Luego pásenlo aquí y pulsen Comprobar.</p>
+      <div class="tscroll"><table id="predTable"></table></div>
+      <button id="predBtn">Comprobar mis predicciones</button>
+      <div class="res" id="predRes"></div>
+    </div>
+
+    <div class="card">
+      <h3>Parte B · Comprobación en Tinkercad</h3>
+      <ol class="steps">
+        <li>Usen su parqueadero igual al de <a href="#codigo">Código base</a>, con <b>sus</b> zonas y ángulos.</li>
+        <li>Inicien la simulación y hagan clic en el sensor. Arrastren el objeto hasta cada una de las 5 distancias.</li>
+        <li>Tomen captura en cada distancia: debe verse el LED, la barrera y el número del sensor.</li>
+        <li>En el Word hagan esta tabla: <b>Distancia · Mi predicción · Lo que pasó · ¿Acerté? · Si fallé, por qué</b>.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Prueba real</div>
+      <h3>Parte B2 · El sensor de verdad</h3>
+      <ol class="steps">
+        <li>Monten el sensor real (TRIG al 7, ECHO al 6) y los LED, y suban el código con Arduino IDE (pasos en <a href="#codigo">Código base</a>, sección 6).</li>
+        <li>El código base no imprime la distancia. Para verla, agreguen debajo de la línea <code>distancia = 0.01723 * leerDistancia(7, 6);</code> la línea <code>Serial.println(distancia);</code> (es la primera línea NUEVA del reto) y abran el Monitor Serie a 9600 baudios.</li>
+        <li>Pongan una regla frente al sensor y ubiquen un cuaderno a cada una de las 5 distancias.</li>
+        <li>Anoten en el Word: <b>Distancia con regla · Lo que marca el sensor · Diferencia · LED que prendió</b>.</li>
+        <li>Respondan: ¿el sensor real mide exacto? ¿Qué pasa si el objeto está inclinado o es de tela?</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>Parte C · Excel en una línea</h3>
+      <p>Escriban la fórmula que en la celda B2 muestre "ROJO", "AMARILLO" o "VERDE" según la distancia que está en A2. Usen sus zonas.</p>
+      <input type="text" id="fx" placeholder='=SI(A2<…;"ROJO";SI(…))' style="width:100%;font-size:15px" aria-label="Fórmula de Excel">
+      <button id="fxBtn">Revisar fórmula</button>
+      <div class="res" id="fxRes"></div>
+    </div>
+  </div>
+  <button onclick="go('reto')">Seguir a la estación 3 →</button>
+</section>
+
+<!-- RETO -->
+<section class="view" id="v-reto" hidden>
+  <div class="eyebrow">Estación 3 · Tinkercad + circuito real</div>
+  <h1>Reto final: Parqueadero 2.0</h1>
+  <p class="lead">El cliente quiere que el parqueadero avise por pantalla qué está pasando y que el LED rojo parpadee como alarma cuando un carro está demasiado cerca.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Lo que debe hacer su sistema</h3>
+      <div class="tscroll"><table>
+        <tr><th>Zona</th><th>LED</th><th>Barrera</th><th>Monitor Serie</th></tr>
+        <tr><td id="rz1">Roja</td><td><span class="led r"></span>Parpadea</td><td id="ra1">Cerrada</td><td><code>OCUPADO</code></td></tr>
+        <tr><td id="rz2">Amarilla</td><td><span class="led y"></span>Encendido</td><td id="ra2">A medias</td><td><code>PRECAUCION</code></td></tr>
+        <tr><td id="rz3">Verde</td><td><span class="led g"></span>Encendido</td><td id="ra3">Abierta</td><td><code>LIBRE</code></td></tr>
+      </table></div>
+      <p class="muted" id="retoData">Saquen sus datos en Inicio para ver sus números aquí.</p>
+    </div>
+    <div class="card">
+      <h3>Paso a paso</h3>
+      <ol class="steps">
+        <li>Dupliquen su parqueadero y llámenlo <b>APELLIDO_NOMBRE_CierreEcilab_8X</b>.</li>
+        <li>Debajo de la línea que mide la distancia agreguen <code>Serial.println(distancia);</code></li>
+        <li>Al comienzo de cada zona agreguen el mensaje: <code>Serial.println("OCUPADO");</code>, <code>"PRECAUCION"</code> o <code>"LIBRE"</code>.</li>
+        <li>En la zona roja, después de <code>digitalWrite(2, HIGH);</code>, agreguen el parpadeo: <code>delay(su tiempo);</code>, <code>digitalWrite(2, LOW);</code> y otro <code>delay(su tiempo);</code></li>
+        <li>Abran el <b>Monitor en serie</b> (botón abajo del panel de código) e inicien la simulación.</li>
+        <li>Cuando funcione en Tinkercad, <b>móntenlo en el Arduino real</b> con el sensor y los LED, y prueben con un carrito o un cuaderno.</li>
+        <li>En su kit no hay servo: <b>la barrera se ve con el LED blanco del pin 5</b> (encendido = barrera abierta) y con el mensaje del Monitor Serie. El código es el mismo.</li>
+        <li>Cuando todo funcione, lleven su Arduino a la <b>estación del servo</b> en la mesa del profe y prueben la barrera real.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Prueba real</div>
+    <h3>Estación del servo (uno para todos)</h3>
+    <ol class="steps">
+      <li>Esperen su turno con el Arduino ya funcionando y el USB desconectado.</li>
+      <li>Conecten el servo: señal al pin 9, rojo a 5V y café a GND.</li>
+      <li>Conecten el USB y pasen el objeto por las tres zonas. Miren si la barrera va a sus tres ángulos.</li>
+      <li>Tomen un video corto o una foto, desconecten y devuelvan el servo para el siguiente.</li>
+    </ol>
+    <p class="note">Mientras esperan turno, sigan con la tabla de simulación contra realidad o con la reflexión. Nadie se queda quieto.</p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Prueba real</div>
+    <h3>Simulación contra realidad</h3>
+    <p>Prueben las tres zonas en los dos mundos y llenen esta tabla en el Word.</p>
+    <div class="tscroll"><table>
+      <tr><th>Zona</th><th>¿Funcionó en Tinkercad?</th><th>¿Funcionó en real?</th><th>¿Qué tuve que ajustar en real?</th></tr>
+      <tr><td>Roja</td><td class="muted">Sí / No</td><td class="muted">Sí / No</td><td class="muted">Ej: el servo temblaba, cambié el ángulo</td></tr>
+      <tr><td>Amarilla</td><td></td><td></td><td></td></tr>
+      <tr><td>Verde</td><td></td><td></td><td></td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>Así debe quedar el programa del reto</h3>
+    <p>Es el <a href="#codigo">código base</a> con las líneas marcadas <b style="color:var(--accent)">NUEVO</b>. Agreguen solo esas 7 líneas y cambien los espacios amarillos <b>___</b> por su tiempo de parpadeo.</p>
+    <div id="codeR"></div>
+    <p class="muted">Cuidado con los punto y coma y las comillas de los mensajes. En el Monitor en serie debe aparecer, en cada vuelta, la distancia y debajo el mensaje de la zona. Por ejemplo: <code id="serEj">9</code> y <code>OCUPADO</code>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Lista de chequeo antes de llamar al profe</h3>
+    <div class="check" id="chk">
+      <label><input type="checkbox" id="c1"> El Monitor Serie muestra la distancia y el mensaje correcto.</label>
+      <label><input type="checkbox" id="c2"> En la zona roja el LED rojo parpadea con mi tiempo.</label>
+      <label><input type="checkbox" id="c3"> La barrera se mueve a mis tres ángulos.</label>
+      <label><input type="checkbox" id="c4"> Probé un valor justo en el borde de cada zona.</label>
+      <label><input type="checkbox" id="c5"> Tomé 3 capturas (una por zona) con mi Nota visible.</label>
+      <label><input type="checkbox" id="c6"> Lo monté en el Arduino real con sensor y LED, lo probé en la estación del servo y tomé fotos.</label>
+    </div>
+    <p class="note">Cuando todo esté marcado, levanten la mano: el profe pasa a ver el circuito real funcionando.</p>
+  </div>
+  <div class="card">
+    <h3>¿Terminaron antes? Reto extra</h3>
+    <p>Hagan que el Monitor Serie cuente cuántas veces entró un carro a la zona roja. Pista: una variable <b>carros</b> que sume 1 solo cuando la zona cambia a roja.</p>
+  </div>
+  <button onclick="go('entrega')">Ir al cierre →</button>
+</section>
+
+<!-- ENTREGA -->
+<section class="view" id="v-entrega" hidden>
+  <div class="eyebrow">Cierre · Reflexión y entrega</div>
+  <h1>Cierre y entrega</h1>
+  <p class="lead">Un ingeniero no solo arma: piensa en lo que aprendió y en cómo podría hacerlo mejor.</p>
+
+  <div class="card">
+    <h3>Parte 1 · ¿Qué aprendí?</h3>
+    <p>Respondan con sus palabras, contando algo que les pasó hoy o en la rotación.</p>
+    <ul class="clean">
+      <li>¿Qué sabía hacer antes de Ecilab y qué sé hacer ahora? Den un ejemplo.</li>
+      <li>¿Qué falla me costó más encontrar y cómo me di cuenta?</li>
+      <li>¿Qué cambió entre la simulación y el circuito real? ¿Por qué creen que pasa?</li>
+      <li>¿Qué haría distinto si empezara este proyecto otra vez?</li>
+    </ul>
+    <label for="tAprendi" class="g-label">Mi respuesta (mínimo 40 palabras)</label>
+    <textarea id="tAprendi" rows="7" placeholder="Antes de Ecilab yo… Ahora sé… La falla que más me costó fue… Entre la simulación y lo real cambió…"></textarea>
+    <span class="muted wc" id="wcAprendi">0 palabras</span>
+  </div>
+
+  <div class="card">
+    <h3>Parte 2 · Propón otra solución</h3>
+    <p>El parqueadero funciona, pero un buen ingeniero siempre busca otra forma de resolver el problema. Piensen en <b>una mejora o una solución distinta</b> y descríbanla en el Word.</p>
+    <div class="grid2">
+      <div class="datum"><b style="font-size:16px;font-family:var(--f-display)">Otro sensor</b><span>¿Y si usamos un sensor infrarrojo, un botón o un sensor de luz en vez del ultrasonido?</span></div>
+      <div class="datum"><b style="font-size:16px;font-family:var(--f-display)">Más avisos</b><span>Un zumbador que pite, una pantalla que muestre los cupos libres.</span></div>
+      <div class="datum"><b style="font-size:16px;font-family:var(--f-display)">Otro problema</b><span>¿Dónde más sirve esta idea? El garaje de la casa, la portería del colegio, un sensor de nivel de agua.</span></div>
+    </div>
+    <p>Su propuesta debe tener:</p>
+    <ol class="steps">
+      <li><b>Qué problema resuelve</b> y quién lo usaría.</li>
+      <li><b>Qué componentes</b> necesita (los que conocen o uno nuevo que investiguen).</li>
+      <li><b>Cómo funcionaría</b>, en pasos tipo "si… entonces…".</li>
+      <li>Un <b>boceto</b> a mano en el cuaderno, con foto en el Word.</li>
+      <li><b>Por qué sería mejor</b> o qué ventaja tiene frente a la solución actual.</li>
+    </ol>
+    <label for="tPropuesta" class="g-label">Mi propuesta (mínimo 40 palabras)</label>
+    <textarea id="tPropuesta" rows="7" placeholder="Problema: … Quién la usaría: … Componentes: … Funciona así: si… entonces… Es mejor porque…"></textarea>
+    <span class="muted wc" id="wcPropuesta">0 palabras</span>
+    <p class="muted">El boceto va a mano en el cuaderno, con foto en el Word.</p>
+  </div>
+
+  <div class="card">
+    <h3>Parte 3 · Autoevaluación</h3>
+    <p>Elijan con honestidad el nivel que describe su trabajo de hoy y escríbanlo en el Word con una razón.</p>
+    <div class="levels">
+      <label><input type="radio" name="lv" id="lv1" value="Bajo"><b>Bajo</b><span class="muted">Me faltaron estaciones y no probé en real.</span></label>
+      <label><input type="radio" name="lv" id="lv2" value="Básico"><b>Básico</b><span class="muted">Hice las estaciones en Tinkercad, pero el reto real quedó incompleto.</span></label>
+      <label><input type="radio" name="lv" id="lv3" value="Alto"><b>Alto</b><span class="muted">El reto funciona en Tinkercad y en real, y reflexioné sobre lo aprendido.</span></label>
+      <label><input type="radio" name="lv" id="lv4" value="Superior"><b>Superior</b><span class="muted">Todo funciona en los dos, explico las diferencias y mi propuesta de otra solución es clara y viable.</span></label>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Qué entregan en Classroom</h3>
+      <ol class="steps">
+        <li><b>Word</b> APELLIDO_NOMBRE_CierreEcilab.docx con: captura del resultado del juego, tabla de fallas (capturas y fotos reales), predicciones y mediciones con el sensor real, tabla simulación contra realidad, qué aprendí, propuesta de otra solución con boceto y autoevaluación.</li>
+        <li><b>Enlace</b> del proyecto de Tinkercad APELLIDO_NOMBRE_CierreEcilab_8X (compartido por enlace).</li>
+        <li><b>Informe de cierre</b> (abajo): captura al final del Word y texto copiado en el comentario de Classroom.</li>
+      </ol>
+      <p class="note">Antes de salir, muestren el cuaderno para el <b>sello</b>.</p>
+    </div>
+    <div class="card">
+      <h3>Cómo se valora</h3>
+      <div class="tscroll"><table>
+        <tr><th>Evidencia</th><th>Qué se mira</th></tr>
+        <tr><td>Juego</td><td>Porcentaje de aciertos al primer intento en los 7 niveles.</td></tr>
+        <tr><td>Detective</td><td>Causa bien explicada, 3 reparaciones en Tinkercad y 1 en real.</td></tr>
+        <tr><td>Piensa como Arduino</td><td>Predicciones con sus datos y mediciones reales comparadas.</td></tr>
+        <tr><td>Reto final</td><td>Funciona en las 3 zonas en Tinkercad y en el Arduino real.</td></tr>
+        <tr><td>Reflexión</td><td>Lo aprendido con ejemplos propios y una solución alternativa bien pensada.</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="card" id="informe">
+    <div class="eyebrow">Entregable final</div>
+    <h3>Informe de cierre</h3>
+    <p>Este informe revisa todo lo que hicieron en la guía y dice qué falta. Primero confirmen lo que ya pusieron en el Word y luego pulsen <b>Generar informe</b>.</p>
+    <div class="check">
+      <label><input type="checkbox" id="w1"> Pegué en el Word la captura del resultado del juego.</label>
+      <label><input type="checkbox" id="w2"> Pegué la tabla de fallas con capturas de 3 reparaciones en Tinkercad.</label>
+      <label><input type="checkbox" id="w3"> Pegué las fotos del caso reparado en el circuito real.</label>
+      <label><input type="checkbox" id="w4"> Pegué la tabla de predicciones y la tabla de mediciones con el sensor real.</label>
+      <label><input type="checkbox" id="w5"> Pegué las capturas del reto y la tabla simulación contra realidad.</label>
+      <label><input type="checkbox" id="w6"> Pegué la foto del boceto de mi propuesta.</label>
+      <label><input type="checkbox" id="w7"> Compartí por enlace mi proyecto de Tinkercad.</label>
+    </div>
+    <button id="genInf">Generar informe</button>
+    <div id="infOut" hidden></div>
+  </div>
+  <p class="lead">Terminaron la rotación de Ecilab Software. ¡Buen trabajo, ingenieros!</p>
+</section>
+</main>
+
+<script>
+/* ===== Generador del programa de referencia (código de texto Arduino) ===== */
+const REF=(function(){
+/* Devuelve las líneas del programa. completo=true agrega lo del reto (marcado nuevo). blankNew=true deja ___ en los tiempos nuevos. */
+function lineas(D,completo,blankNew){
+  const L=[],a=(t,nuevo)=>L.push({t,nuevo:!!nuevo&&!!completo});
+  const t=blankNew?'___':D.t;
+  a('#include <Servo.h>');
+  a('');
+  a('Servo barrera;        // servo de la barrera');
+  a('int distancia = 0;    // distancia medida en cm');
+  a('');
+  a('// Mide el tiempo del eco del sensor de ultrasonido');
+  a('long leerDistancia(int pinTrig, int pinEcho) {');
+  a('  pinMode(pinTrig, OUTPUT);');
+  a('  digitalWrite(pinTrig, LOW);');
+  a('  delayMicroseconds(2);');
+  a('  digitalWrite(pinTrig, HIGH);    // envía el sonido');
+  a('  delayMicroseconds(10);');
+  a('  digitalWrite(pinTrig, LOW);');
+  a('  pinMode(pinEcho, INPUT);');
+  a('  return pulseIn(pinEcho, HIGH);  // tiempo que tarda el eco');
+  a('}');
+  a('');
+  a('void setup() {');
+  a('  Serial.begin(9600);   // Monitor Serie a 9600 baudios');
+  a('  pinMode(2, OUTPUT);   // LED rojo');
+  a('  pinMode(3, OUTPUT);   // LED amarillo');
+  a('  pinMode(4, OUTPUT);   // LED verde');
+  a('  pinMode(5, OUTPUT);   // LED blanco: barrera abierta');
+  a('  barrera.attach(9);    // servo en el pin 9');
+  a('}');
+  a('');
+  a('void loop() {');
+  a('  // 1. Medir la distancia (TRIG en 7, ECHO en 6)');
+  a('  distancia = 0.01723 * leerDistancia(7, 6);');
+  if(completo)a('  Serial.println(distancia);',1);
+  a('');
+  a('  // 2. Decidir la zona');
+  a(`  if (distancia < ${D.rojo}) {`);
+  a('    // Zona ROJA: barrera cerrada');
+  if(completo)a('    Serial.println("OCUPADO");',1);
+  a('    digitalWrite(3, LOW);');
+  a('    digitalWrite(4, LOW);');
+  a('    digitalWrite(5, LOW);');
+  a(`    barrera.write(${D.cerrado});`);
+  a('    digitalWrite(2, HIGH);');
+  if(completo){a(`    delay(${t});`,1);a('    digitalWrite(2, LOW);',1);a(`    delay(${t});`,1)}
+  a(`  } else if (distancia < ${D.amarillo}) {`);
+  a('    // Zona AMARILLA: barrera a medias');
+  if(completo)a('    Serial.println("PRECAUCION");',1);
+  a('    digitalWrite(2, LOW);');
+  a('    digitalWrite(3, HIGH);');
+  a('    digitalWrite(4, LOW);');
+  a('    digitalWrite(5, LOW);');
+  a(`    barrera.write(${D.medio});`);
+  a('  } else {');
+  a('    // Zona VERDE: barrera abierta');
+  if(completo)a('    Serial.println("LIBRE");',1);
+  a('    digitalWrite(2, LOW);');
+  a('    digitalWrite(3, LOW);');
+  a('    digitalWrite(4, HIGH);');
+  a('    digitalWrite(5, HIGH);');
+  a(`    barrera.write(${D.abierto});`);
+  a('  }');
+  a('  delay(100);');
+  a('}');
+  return L;
+}
+function texto(D,completo){return lineas(D,completo).map(l=>l.t).join('\n')}
+/* HTML con colores. Marcadores: [[x]] = error resaltado; ___ = espacio para completar */
+function resaltar(raw){
+  const e=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const re=/(\/\/.*$)|("[^"]*")|\b(if|else|void|int|long|return|include)\b|(\[\[.*?\]\])|(___)|\b(\d+)\b/g;
+  let out='',i=0,m;
+  while((m=re.exec(raw))){out+=e(raw.slice(i,m.index));
+    if(m[1])out+=`<span class="tc">${e(m[1])}</span>`;
+    else if(m[2])out+=`<span class="ts">${e(m[2])}</span>`;
+    else if(m[3])out+=`<span class="tk">${m[3]}</span>`;
+    else if(m[4])out+=`<span class="tbad">${e(m[4].slice(2,-2))}</span>`;
+    else if(m[5])out+='<span class="tblank">___</span>';
+    else out+=`<span class="tn">${m[6]}</span>`;
+    i=re.lastIndex}
+  return out+e(raw.slice(i));
+}
+function codigoHTML(L){
+  return `<div class="code codeL">${L.map((l,k)=>{const o=typeof l==='string'?{t:l}:l;
+    return `<div class="cl${o.nuevo?' nuevo':''}"><span class="lnum">${k+1}</span><span class="ltx">${resaltar(o.t)||' '}</span></div>`}).join('')}</div>`;
+}
+function esperado(D,d){
+  if(d<D.rojo)return {zona:'ROJA',led:'Rojo',ang:D.cerrado,msg:'OCUPADO',bar:'Apagado'};
+  if(d<D.amarillo)return {zona:'AMARILLA',led:'Amarillo',ang:D.medio,msg:'PRECAUCION',bar:'Apagado'};
+  return {zona:'VERDE',led:'Verde',ang:D.abierto,msg:'LIBRE',bar:'Encendido'};
+}
+function datos(n){
+  const rojo=8+(n*7)%8, amarillo=25+(n*3)%16, abierto=80+(n*11)%21, cerrado=(n*5)%11;
+  return {n,rojo,amarillo,abierto,cerrado,medio:Math.round((abierto+cerrado)/2),t:200+((n*13)%9)*50};
+}
+return {lineas,texto,codigoHTML,resaltar,esperado,datos};
+})();
+
+
+const S={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let R={casos:{},pred:0,fx:false};try{const x=JSON.parse(S.get('ecilab_cierre_R')||'null');if(x&&x.casos)R=x}catch(e){}
+const saveR=()=>S.set('ecilab_cierre_R',JSON.stringify(R));
+const V=['inicio','juego','codigo','detective','piensa','reto','entrega'];
+function show(v){if(!V.includes(v))v='inicio';V.forEach(x=>document.getElementById('v-'+x).hidden=x!==v);
+  document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+v));window.scrollTo(0,0)}
+function go(v){location.hash=v}
+addEventListener('hashchange',()=>show(location.hash.slice(1)));
+
+/* ---------- datos personales ---------- */
+let D=null;
+function datos(n){
+  const rojo=8+(n*7)%8, amarillo=25+(n*3)%16, abierto=80+(n*11)%21, cerrado=(n*5)%11;
+  return {n,rojo,amarillo,abierto,cerrado,medio:Math.round((abierto+cerrado)/2),t:200+((n*13)%9)*50};
+}
+function setDigit(n){
+  D=datos(n);S.set('ecilab_cierre_dig',String(n));
+  document.getElementById('dig').value=n;
+  document.getElementById('misDatos').hidden=false;
+  document.getElementById('dataBox').innerHTML=[
+    [D.rojo+' cm','Zona roja: menor que'],[D.amarillo+' cm','Zona amarilla: menor que'],
+    [D.cerrado+'°','Barrera cerrada'],[D.medio+'°','Barrera a medias'],[D.abierto+'°','Barrera abierta'],[D.t+' ms','Tiempo de parpadeo']]
+    .map(([b,s])=>`<div class="datum"><b>${b}</b><span>${s}</span></div>`).join('');
+  renderPiensa();renderReto();renderCodigo();
+}
+document.getElementById('digBtn').onclick=()=>{const v=parseInt(document.getElementById('dig').value,10);
+  if(isNaN(v)||v<0||v>99){alertBox();return}setDigit(v)};
+function alertBox(){const b=document.getElementById('misDatos');b.hidden=false;
+  document.getElementById('dataBox').innerHTML='<p class="res no">Escriban un número de 0 a 99.</p>'}
+
+/* ---------- casos detective ---------- */
+const CASOS=[
+ {id:'A',sym:'El LED verde nunca prende, aunque el carro esté lejos.',
+  ver:`<div class="tscroll"><table><tr><th>Desde</th><th>Hasta</th></tr>
+  <tr><td>Pin 4</td><td>Resistencia 220 Ω</td></tr>
+  <tr><td>Resistencia</td><td class="bad">Pata corta (−) del LED verde</td></tr>
+  <tr><td class="bad">Pata larga (+) del LED verde</td><td>GND</td></tr></table></div>`,
+  ops:['La resistencia es muy grande','El LED está conectado al revés','El pin 4 no existe en el Arduino'],ok:1,
+  why:'Correcto. La corriente debe entrar por la pata larga (+). Volteen el LED.'},
+ {id:'B',sym:'El sensor marca siempre 0 cm, sin importar dónde esté el objeto.',
+  ver:`<p>Circuito: TRIG al pin 7 y ECHO al pin 6. Código:</p>`+REF.codigoHTML(['// 1. Medir la distancia','distancia = 0.01723 * leerDistancia([[6]], [[7]]);']),
+  ops:['El sensor está dañado','En el código TRIG y ECHO están cambiados','Falta conectar el LED rojo'],ok:1,
+  why:'Correcto. Debe ser leerDistancia(7, 6): primero el pin de TRIG y luego el de ECHO, igual que el cableado.'},
+ {id:'C',sym:'La barrera nunca se mueve, pero los LED sí cambian.',
+  ver:`<p>Circuito: cable de señal del servo en el pin 9. Código en setup():</p>`+REF.codigoHTML(['pinMode(5, OUTPUT);   // LED blanco','barrera.attach([[10]]);   // servo']),
+  ops:['El servo está en un pin distinto al del código','El ángulo 90 no es válido','El servo necesita una resistencia'],ok:0,
+  why:'Correcto. El código y el cable deben usar el mismo pin. Cambien a barrera.attach(9);'},
+ {id:'D',sym:'El LED rojo prende cuando el carro está lejos y se apaga cuando está cerca.',
+  ver:`<p>LED rojo en el pin 2. Código:</p>`+REF.codigoHTML(['if (distancia [[>]] 10) {','  digitalWrite(2, HIGH);','} else {','  digitalWrite(2, LOW);','}']),
+  ops:['El LED rojo está quemado','La comparación está invertida: debe ser menor que','Falta un delay()'],ok:1,
+  why:'Correcto. "Cerca" significa distancia menor que 10. El signo debe ser <.'},
+ {id:'E',sym:'Tinkercad muestra una advertencia en el LED amarillo y la simulación marca corriente excesiva.',
+  ver:`<div class="tscroll"><table><tr><th>Desde</th><th>Hasta</th></tr>
+  <tr><td>Pin 3</td><td class="bad">Pata larga (+) del LED amarillo</td></tr>
+  <tr><td>Pata corta (−)</td><td>GND</td></tr></table></div>`,
+  ops:['Falta la resistencia que protege al LED','El LED amarillo necesita 9V','El pin 3 debe ir a 5V'],ok:0,
+  why:'Correcto. Sin resistencia pasa demasiada corriente y el LED se quema. Pongan una de 220 Ω entre el pin y el LED.'}
+];
+document.getElementById('casos').innerHTML=CASOS.map(c=>`
+ <div class="card caso"><div class="eyebrow">Caso ${c.id}</div>
+  <p class="sym">Síntoma: ${c.sym}</p>${c.ver}
+  <div class="opts">${c.ops.map((o,i)=>`<label><input type="radio" name="cs${c.id}" id="cs${c.id}${i}" value="${i}"> ${o}</label>`).join('')}</div>
+  <button class="ghost" data-c="${c.id}">Comprobar</button><div class="res" id="r${c.id}"></div></div>`).join('');
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{
+  const c=CASOS.find(x=>x.id===b.dataset.c);const s=document.querySelector(`input[name=cs${c.id}]:checked`);const r=document.getElementById('r'+c.id);
+  if(!s){r.className='res no';r.textContent='Elijan una opción.';return}
+  const ok=+s.value===c.ok;r.className='res '+(ok?'ok':'no');
+  if(ok){R.casos[c.id]=true;saveR()}
+  r.textContent=ok?'✔ '+c.why:'✘ Aún no. Comparen el síntoma con la tabla o el código: ¿qué no coincide?'});
+
+/* ---------- piensa como arduino ---------- */
+function esperado(d){if(d<D.rojo)return['ROJO',D.cerrado];if(d<D.amarillo)return['AMARILLO',D.medio];return['VERDE',D.abierto]}
+function distancias(){const a=[D.rojo-3,D.rojo,Math.floor((D.rojo+D.amarillo)/2),D.amarillo,D.amarillo+12];
+  const o=[[2,0,4,1,3],[4,1,0,3,2],[1,3,2,0,4]][D.n%3];return o.map(i=>a[i])}
+function renderPiensa(){
+  document.getElementById('needDigit').hidden=true;document.getElementById('piensaBody').hidden=false;
+  document.getElementById('codeP').innerHTML=REF.codigoHTML(REF.lineas(D,false));
+  const max=D.amarillo+20,w=x=>(x/max*100).toFixed(1)+'%';
+  document.getElementById('zonaBar').innerHTML=`<div class="zone" role="img" aria-label="Zonas de distancia">
+   <div style="width:${w(D.rojo)};background:var(--red)">0–${D.rojo-1}</div>
+   <div style="width:${w(D.amarillo-D.rojo)};background:var(--yellow);color:#2a2000">${D.rojo}–${D.amarillo-1}</div>
+   <div style="flex:1;background:var(--green)">${D.amarillo}+ cm</div></div>`;
+  const ds=distancias();
+  document.getElementById('predTable').innerHTML='<tr><th>Distancia</th><th>¿Qué LED prende?</th><th>Ángulo de la barrera</th><th></th></tr>'+
+   ds.map((d,i)=>`<tr><td style="font-family:var(--f-mono)"><b>${d} cm</b></td>
+   <td><select id="pl${i}" aria-label="LED para ${d} cm"><option value="">Elegir…</option><option>ROJO</option><option>AMARILLO</option><option>VERDE</option></select></td>
+   <td><input type="number" id="pa${i}" style="width:90px" aria-label="Ángulo para ${d} cm"> °</td><td id="pk${i}"></td></tr>`).join('');
+}
+document.getElementById('predBtn').onclick=()=>{
+  if(!D)return;const ds=distancias();let bien=0;
+  ds.forEach((d,i)=>{const [l,a]=esperado(d);const ok=document.getElementById('pl'+i).value===l&&+document.getElementById('pa'+i).value===a;
+    if(ok)bien++;const c=document.getElementById('pk'+i);c.textContent=ok?'✔':'✘';c.style.color=ok?'var(--green)':'var(--red)'});
+  const r=document.getElementById('predRes');r.className='res '+(bien===5?'ok':'no');
+  R.pred=Math.max(R.pred||0,bien);saveR();
+  r.textContent=bien===5?'✔ ¡5 de 5! Ahora compruébenlo en Tinkercad.':`${bien} de 5. Revisen las ✘: ¿la distancia es menor que el límite o es igual?`};
+document.getElementById('fxBtn').onclick=()=>{
+  const r=document.getElementById('fxRes');if(!D){r.className='res no';r.textContent='Primero saquen sus datos en Inicio.';return}
+  const f=document.getElementById('fx').value.toUpperCase().replace(/\s/g,'').replace(/,/g,';');
+  const ok=f.startsWith('=SI(')&&f.includes('A2<'+D.rojo+';')&&f.includes('A2<'+D.amarillo+';')&&f.includes('"ROJO"')&&f.includes('"AMARILLO"')&&f.includes('"VERDE"');
+  r.className='res '+(ok?'ok':'no');
+  if(ok){R.fx=true;saveR()}
+  r.textContent=ok?'✔ Bien. Péguenla en su Excel, arrástrenla hacia abajo y prueben con las 5 distancias.':`✘ Revisen: deben aparecer A2<${D.rojo} y A2<${D.amarillo}, un SI dentro de otro y los tres textos entre comillas.`};
+
+/* ---------- reto ---------- */
+function renderReto(){
+  document.getElementById('rz1').textContent=`Roja (< ${D.rojo} cm)`;
+  document.getElementById('rz2').textContent=`Amarilla (< ${D.amarillo} cm)`;
+  document.getElementById('rz3').textContent=`Verde (${D.amarillo} cm o más)`;
+  document.getElementById('ra1').textContent=`Cerrada · ${D.cerrado}°`;
+  document.getElementById('ra2').textContent=`A medias · ${D.medio}°`;
+  document.getElementById('ra3').textContent=`Abierta · ${D.abierto}°`;
+  document.getElementById('retoData').textContent=`Sus datos: parpadeo de ${D.t} ms (documento terminado en ${String(D.n).padStart(2,'0')}).`;
+}
+function renderCodigo(){
+  document.getElementById('needDigitC').hidden=true;document.getElementById('codigoBody').hidden=false;
+  document.getElementById('codText').innerHTML=REF.codigoHTML(REF.lineas(D,false));
+  const ds=[D.rojo-2,Math.floor((D.rojo+D.amarillo)/2)+1,D.amarillo+20];
+  document.getElementById('codTest').innerHTML='<tr><th>Distancia</th><th>Zona</th><th>LED encendido</th><th>Servo</th><th>LED blanco (barrera)</th></tr>'+
+    ds.map(d=>{const e=REF.esperado(D,d);return `<tr><td style="font-family:var(--f-mono)"><b>${d} cm</b></td><td>${e.zona}</td><td>${e.led}</td><td>${e.ang}°</td><td>${e.bar}</td></tr>`}).join('');
+  document.getElementById('codeR').innerHTML=REF.codigoHTML(REF.lineas(D,true,true));
+  document.getElementById('serEj').textContent=String(Math.max(2,D.rojo-2));
+}
+document.getElementById('codCopy').onclick=()=>{const r=document.getElementById('codCopyRes');const t=REF.texto(D,false);
+  const sel=()=>{const rg=document.createRange();rg.selectNodeContents(document.getElementById('codText'));const se=getSelection();se.removeAllRanges();se.addRange(rg)};
+  try{navigator.clipboard.writeText(t).then(()=>{r.className='res ok';r.textContent='Copiado.'},()=>{sel();r.className='res no';r.textContent='Quedó seleccionado: usen Ctrl+C.'})}catch(e){sel();r.className='res no';r.textContent='Quedó seleccionado: usen Ctrl+C.'}};
+
+/* checklist persistente */
+['c1','c2','c3','c4','c5','c6','lv1','lv2','lv3','lv4'].forEach(id=>{const el=document.getElementById(id);
+  if(S.get('ec_'+id)==='1')el.checked=true;el.addEventListener('change',()=>{
+    if(el.type==='radio')['lv1','lv2','lv3','lv4'].forEach(x=>S.set('ec_'+x,document.getElementById(x).checked?'1':'0'));
+    else S.set('ec_'+id,el.checked?'1':'0')})});
+
+const saved=S.get('ecilab_cierre_dig');if(saved!==null&&saved!=='')setDigit(parseInt(saved,10));
+show(location.hash.slice(1));
+/* ================= JUEGO: MISIÓN PARQUEADERO ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* ---- banco de preguntas ---- */
+const C=(q,ops,ok,why)=>({type:'choice',q,ops,ok,why});
+const L=(q,lines,bad,why)=>({type:'line',q,lines,bad,why});
+const LEVELS=[
+ {id:'ard',name:'Conoce el Arduino',sub:'La placa, los pines y la protoboard',badge:'Explorador Arduino',n:7,pool:[
+  C('¿Qué es un Arduino?',['Una placa con un microcontrolador que se programa para controlar componentes','Un computador portátil pequeño','Un tipo de cable USB','Un sensor de distancia'],0,'El Arduino es una placa con un microcontrolador: un "cerebro" pequeño que ejecuta el programa que le cargamos.'),
+  C('¿Qué voltaje entrega el pin 5V del Arduino UNO?',['5 voltios','220 voltios','12 voltios','0 voltios'],0,'El pin 5V entrega 5 voltios para alimentar sensores y el servo.'),
+  C('¿Qué es GND?',['La tierra o negativo del circuito','Un pin que da 5V','El pin del sensor','Un tipo de LED'],0,'GND es la tierra (negativo). Todo circuito debe cerrarse en GND.'),
+  C('Los pines numerados del 0 al 13 del Arduino UNO son…',['Pines digitales: pueden estar en HIGH o LOW','Pines solo de energía','Pines solo para el USB','Pines decorativos'],0,'Los pines digitales trabajan con dos estados: HIGH (encendido, 5V) y LOW (apagado, 0V).'),
+  C('Los pines A0 a A5 son…',['Pines analógicos que leen valores entre 0 y 1023','Pines de tierra','Pines que solo encienden LED','Pines para el servo únicamente'],0,'Los pines analógicos leen valores graduales, por ejemplo de un sensor de luz o un potenciómetro.'),
+  C('¿Para qué sirve el cable USB del Arduino?',['Para cargar el programa y darle energía','Solo para cargar el celular','Para medir distancias','Para conectar el servo'],0,'Por el USB se sube el código y también se alimenta la placa.'),
+  C('En la protoboard, los huecos de una misma columna corta (a–e)…',['Están conectados entre sí','No tienen ninguna conexión','Están conectados a 220V','Solo sirven para el servo'],0,'Cada columna de 5 huecos está unida por dentro. Por eso los componentes se conectan poniéndolos en la misma columna.'),
+  C('Las líneas largas de los bordes de la protoboard (+ y −) se usan para…',['Repartir 5V y GND a todo el circuito','Poner el Arduino encima','Conectar el USB','Nada, son decorativas'],0,'Las filas de los bordes son los rieles de alimentación: una para 5V y otra para GND.'),
+  C('¿Cuál de estos es un SENSOR?',['El ultrasonido','El LED','El servo','La resistencia'],0,'Un sensor capta información del entorno. El ultrasonido mide distancia.'),
+  C('¿Cuál de estos es un ACTUADOR?',['El servomotor','El sensor de ultrasonido','El cable USB','La protoboard'],0,'Un actuador hace una acción en el mundo real: el servo mueve la barrera.'),
+  C('¿Cómo mide distancia el sensor de ultrasonido?',['Envía un sonido y mide cuánto tarda en volver el eco','Toma una foto del objeto','Mide la temperatura','Usa un rayo láser visible'],0,'Funciona como un murciélago: lanza un sonido que no oímos y calcula la distancia con el tiempo del eco.')
+ ]},
+ {id:'prog',name:'Programación',sub:'Código, variables y decisiones',badge:'Programador',n:7,pool:[
+  C('¿Qué es un algoritmo?',['Una serie de pasos ordenados para resolver un problema','Un tipo de cable','Un componente electrónico','Un error del programa'],0,'Un algoritmo es una lista de pasos en orden. El programa del parqueadero es un algoritmo.'),
+  C('¿Qué parte del programa se repite una y otra vez sin parar?',['void loop()','void setup()','Serial.begin(9600);','#include <Servo.h>'],0,'Todo lo que está dentro de void loop() se repite sin parar. void setup() se ejecuta una sola vez al encender.'),
+  C('¿Qué hace void setup() en el código de texto?',['Se ejecuta una vez al encender: configura los pines, el servo y el monitor serie','Se repite sin parar','Mide la distancia','Apaga todos los LED'],0,'setup() prepara todo una sola vez. Después el Arduino pasa a loop() y lo repite siempre.'),
+  C('¿Qué hace la línea int distancia = 0; ?',['Crea una variable entera llamada distancia que empieza en 0','Mide la distancia con el sensor','Enciende el LED','Imprime un 0 en el Monitor Serie'],0,'int crea una variable de números enteros. distancia guarda el valor que mide el sensor.'),
+  C('¿Qué hace if ( ... ) { ... } else { ... } ?',['Toma una decisión: si la condición es verdadera hace lo primero; si no, lo del else','Repite 10 veces','Espera un segundo','Imprime un mensaje'],0,'Es una estructura de decisión. El código entre las primeras llaves corre si la condición se cumple; el del else, si no.'),
+  C('digitalWrite(2, HIGH); significa…',['Enviar 5V al pin 2 (encender)','Apagar el pin 2','Leer el pin 2','Configurar el pin 2 como entrada'],0,'HIGH es encendido (5V). LOW es apagado (0V).'),
+  C('¿Qué hace pinMode(2, OUTPUT); en setup()?',['Configura el pin 2 como salida para poder encender un LED','Enciende el LED del pin 2','Lee el sensor','Mueve el servo'],0,'Antes de usar un pin para encender algo hay que declararlo como salida (OUTPUT).'),
+  C('¿Cuál condición es verdadera si distancia vale 15?',['distancia < 20','distancia < 10','distancia > 20','distancia < 15'],0,'15 es menor que 20. Ojo: 15 no es menor que 15.'),
+  C('¿Por qué importa el ORDEN de las líneas?',['Porque el Arduino ejecuta las líneas de arriba hacia abajo','No importa el orden','Porque las líneas de abajo van primero','Solo importa el color del texto'],0,'El programa se lee de arriba a abajo, línea por línea. Cambiar el orden cambia lo que pasa.'),
+  C('¿Para qué sirve el punto y coma ; al final de una línea?',['Indica que terminó la instrucción','Es un comentario','Enciende el LED','Se puede quitar sin problema'],0,'En Arduino cada instrucción termina en ;. Si falta, el programa no compila.'),
+  C('¿Qué significa // en el código?',['Que lo que sigue es un comentario y el Arduino lo ignora','Una división','El final del programa','Un error'],0,'Los comentarios explican el código para las personas. El Arduino no los ejecuta.'),
+  C('¿Cuál condición pregunta si distancia es IGUAL a 10?',['distancia == 10','distancia = 10','distancia => 10','distancia := 10'],0,'== compara. Un solo = guarda un valor en la variable.'),
+  C('Hay tres zonas (roja, amarilla, verde). ¿Cómo se escribe en el código?',['if ( ... ) { } else if ( ... ) { } else { }','Un solo if ( ... ) { }','Tres delay()','Tres Serial.println()'],0,'if revisa la primera zona, else if la segunda y else atrapa todo lo demás. Solo se ejecuta una.'),
+  C('¿Qué hace delay(500); ?',['Detiene el programa medio segundo','Repite 500 veces','Mide 500 cm','Gira el servo 500°'],0,'delay usa milisegundos: 500 ms son medio segundo de pausa.'),
+  C('¿Qué es depurar un programa?',['Encontrar y corregir errores','Borrar el programa','Cargar el programa al Arduino','Comprar componentes'],0,'Depurar es buscar los bugs y corregirlos, como en el Detective de fallas.')
+ ]},
+ {id:'con',name:'Conexiones',sub:'¿A dónde va cada cable?',badge:'Electricista',n:6,pool:[
+  C('El cable TRIG del sensor de ultrasonido va al pin…',['Pin 7','Pin 6','Pin 9','GND'],0,'TRIG es el que dispara el sonido. En nuestro montaje va al pin 7.'),
+  C('El cable ECHO del sensor de ultrasonido va al pin…',['Pin 6','Pin 7','5V','Pin 13'],0,'ECHO recibe el eco que rebota. En nuestro montaje va al pin 6.'),
+  C('La señal del servomotor (cable naranja o amarillo) va al pin…',['Pin 9','GND','5V','Pin 6'],0,'La señal le dice al servo a qué ángulo girar. Va al pin 9.'),
+  C('El cable rojo del servo se conecta a…',['5V','GND','Pin 9','Pin 7'],0,'El rojo es la alimentación: 5V.'),
+  C('El cable café o negro del servo se conecta a…',['GND','5V','Pin 9','A0'],0,'El café o negro es tierra: GND.'),
+  C('¿Cuál es el camino correcto para un LED?',['Pin → resistencia → pata larga (+) → pata corta (−) → GND','Pin → pata corta (−) → pata larga (+) → GND','GND → resistencia → pin','5V → pata larga → pin'],0,'La corriente sale del pin, pasa por la resistencia y entra por la pata larga (+).'),
+  C('¿Para qué sirve la resistencia junto al LED?',['Limita la corriente para que el LED no se queme','Hace que el LED brille más','Mide la distancia','Le da energía al Arduino'],0,'La resistencia frena la corriente. Sin ella, el LED se puede quemar.'),
+  C('¿Cómo reconoces la pata positiva (+) de un LED?',['Es la pata más larga','Es la pata más corta','Es la que está doblada','Las dos son iguales'],0,'La pata larga es el ánodo (+). La corta es el cátodo (−).'),
+  C('El sensor de ultrasonido tiene 4 pines. ¿Cuáles son de energía?',['VCC y GND','TRIG y ECHO','VCC y TRIG','ECHO y GND'],0,'VCC va a 5V y GND a tierra. TRIG y ECHO son de señal.')
+ ]},
+ {id:'zon',name:'¿Qué LED prende?',sub:'Piensa como el Arduino',badge:'Cerebro Arduino',n:6,gen:true},
+ {id:'bug',name:'Caza el bug',sub:'Toca la línea que está mal',badge:'Detective',n:6,pool:[
+  L('Cableado: TRIG en pin 7, ECHO en pin 6. ¿Qué línea tiene el error?',['// 1. Medir la distancia','distancia = 0.01723 * leerDistancia(6, 7);','Serial.println(distancia);'],1,'Los pines están al revés: debe ser leerDistancia(7, 6), primero TRIG y luego ECHO, igual que los cables.'),
+  L('Se quiere: LED rojo (pin 2) cuando el carro está CERCA, a menos de 10 cm.',['// Alarma de cercanía','if (distancia > 10) {','  digitalWrite(2, HIGH);','} else {','  digitalWrite(2, LOW);','}'],1,'«Cerca» es distancia menor que 10. El signo debe ser <.'),
+  L('El cable de señal del servo está en el pin 9 y la barrera no se mueve.',['void setup() {','  pinMode(5, OUTPUT);','  barrera.attach(10);','}'],2,'attach usa el pin 10 pero el cable está en el 9. Deben coincidir: barrera.attach(9);'),
+  L('El LED rojo (pin 2) debe parpadear, pero se ve siempre encendido.',['// Parpadeo de alarma','digitalWrite(2, HIGH);','delay(300);','digitalWrite(2, LOW);','delay(0);'],4,'Sin pausa después de apagar, el programa vuelve a encenderlo de inmediato y parece que nunca se apaga. Debe ser delay(300);'),
+  L('En la zona verde el Monitor Serie debe decir LIBRE.',['} else {','  // Zona VERDE','  Serial.println("OCUPADO");','  digitalWrite(4, HIGH);','  barrera.write(90);','}'],2,'En la zona verde el mensaje debe ser Serial.println("LIBRE");'),
+  L('El LED amarillo está conectado al pin 3.',['} else if (distancia < 30) {','  // Zona AMARILLA','  digitalWrite(4, HIGH);','  barrera.write(45);'],2,'El LED amarillo está en el pin 3, no en el 4: digitalWrite(3, HIGH);'),
+  L('Se quiere ver el número de la distancia en el Monitor Serie, pero aparece la palabra «distancia».',['// 1. Medir la distancia','distancia = 0.01723 * leerDistancia(7, 6);','Serial.println("distancia");'],2,'Con comillas imprime el texto. Sin comillas imprime el valor de la variable: Serial.println(distancia);'),
+  L('Tinkercad no deja iniciar la simulación y marca un error.',['void loop() {','  digitalWrite(3, HIGH)','  delay(500);','}'],1,'Falta el punto y coma al final: digitalWrite(3, HIGH);'),
+  L('Se quería encender el LED verde solo cuando la distancia fuera 10 cm, pero se queda prendido siempre.',['distancia = 0.01723 * leerDistancia(7, 6);','if (distancia = 10) {','  digitalWrite(4, HIGH);','}'],1,'Con un solo = se guarda 10 en la variable y la condición siempre se cumple. Para comparar se usa ==.'),
+ ]},
+ {id:'srv',name:'Servo y Monitor Serie',sub:'La barrera y los mensajes',badge:'Maestro del servo',n:6,pool:[
+  C('¿Entre qué ángulos se puede mover un servo como el del kit?',['De 0° a 180°','De 0° a 360° sin parar','De 0° a 90° solamente','De −90° a 90°'],0,'El servo estándar gira entre 0° y 180°.'),
+  C('La barrera cerrada está en 10° y abierta en 90°. ¿Cuál es el ángulo "a medias"?',['50°','40°','45°','100°'],0,'(10 + 90) ÷ 2 = 50°.'),
+  C('La barrera cerrada está en 0° y abierta en 100°. ¿Cuál es el ángulo "a medias"?',['50°','40°','60°','100°'],0,'(0 + 100) ÷ 2 = 50°.'),
+  C('¿Para qué sirve el Monitor Serie?',['Para ver mensajes y números que envía el Arduino','Para cargar el código más rápido','Para darle energía al servo','Para medir la corriente del LED'],0,'El Monitor Serie muestra lo que el Arduino imprime, como la distancia.'),
+  C('El servo real tiembla mucho cuando se mueve. ¿Qué puede estar pasando?',['La alimentación es débil o hay un cable flojo','El código tiene muchos LED','El sensor está al revés','El Monitor Serie está abierto'],0,'Un servo pide bastante corriente. Si un cable está flojo o falta energía, tiembla.'),
+  C('¿Qué instrucción hace que el LED se quede encendido un rato?',['delay(___);','barrera.write(___);','Serial.println(___);','pinMode(___, OUTPUT);'],0,'delay detiene el programa ese tiempo y el LED se queda como estaba.'),
+  C('¿Qué hace barrera.write(90); ?',['Mueve el servo a 90 grados','Espera 90 milisegundos','Enciende el LED 90 veces','Mide 90 cm'],0,'write le dice al servo a qué ángulo ir.'),
+  C('¿Qué línea muestra la distancia en el Monitor Serie?',['Serial.println(distancia);','Serial.begin(distancia);','print distancia','digitalWrite(distancia, HIGH);'],0,'Serial.println envía el valor al Monitor Serie y pasa a la siguiente línea.'),
+  C('1000 milisegundos equivalen a…',['1 segundo','10 segundos','0,1 segundos','1 minuto'],0,'1000 ms = 1 s.')
+ ]},
+ {id:'real',name:'Simulación vs. realidad',sub:'Lo que cambia en el mundo real',badge:'Ingeniero de verdad',n:6,pool:[
+  C('En Tinkercad el LED prende, pero en el circuito real no. ¿Qué revisas primero?',['Que el LED no esté al revés y los cables estén firmes','Comprar otro Arduino','Cambiar todo el código','Apagar el computador'],0,'En lo real los errores más comunes son cables sueltos y LED al revés.'),
+  C('¿Por qué probamos primero en Tinkercad?',['Para probar sin dañar componentes','Porque el Arduino real no funciona','Porque Tinkercad es más rápido que la luz','Para no tener que escribir código'],0,'La simulación permite equivocarse sin quemar nada.'),
+  C('Antes de cambiar cables en el circuito real debes…',['Desconectar el USB','Abrir el Monitor Serie','Subir el brillo del LED','Girar el servo'],0,'Desconectar evita cortocircuitos y daños.'),
+  C('El sensor real marca 23 cm, pero con la regla son 20 cm. ¿Por qué puede pasar?',['El objeto está inclinado o absorbe el sonido','El Arduino está mal','La regla está dañada siempre','El LED rojo está prendido'],0,'El ultrasonido rebota mejor en superficies planas y duras. Si el objeto está inclinado o es blando, mide distinto.'),
+  C('La zona roja es "menor que 12". Si la distancia es exactamente 12 cm, ¿qué zona es?',['No es roja: pasa a la siguiente zona','Es roja','El Arduino se apaga','Prenden todos los LED'],0,'"Menor que" no incluye el borde: 12 no es menor que 12.'),
+  C('Un buen ingeniero, cuando algo falla…',['Revisa paso a paso: síntoma, causa y corrección','Borra todo y empieza de cero','Le copia al compañero','Espera a que se arregle solo'],0,'Diagnosticar con orden es la forma más rápida de encontrar la falla.'),
+  C('¿Qué ventaja tiene probar el circuito real además de la simulación?',['Descubres problemas que la simulación no muestra','Ninguna, es lo mismo','Gasta menos energía','No necesita código'],0,'En lo real aparecen cables flojos, ruido y medidas imperfectas.')
+ ]}
+];
+
+/* ---- generador de zonas ---- */
+function genZona(){
+  const rojo=8+rnd(8), amar=25+rnd(16);
+  const cands=[rnd(rojo),rojo,rojo+rnd(amar-rojo),amar,amar+1+rnd(15),Math.max(2,rojo-1)];
+  const d=cands[rnd(cands.length)];
+  const ans=d<rojo?0:d<amar?1:2;
+  const tips=['ROJO','AMARILLO','VERDE'];
+  const why=d===rojo||d===amar?`${d} no es menor que ${d}: "menor que" no incluye el borde, así que prende ${tips[ans]}.`:
+    ans===0?`${d} es menor que ${rojo}: zona roja.`:ans===1?`${d} no es menor que ${rojo}, pero sí es menor que ${amar}: zona amarilla.`:`${d} no es menor que ${amar}: zona verde.`;
+  return {type:'zone',rojo,amar,d,ok:ans,ops:['🔴 Rojo','🟡 Amarillo','🟢 Verde'],noShuffle:true,
+   q:`Zona roja: menor que ${rojo} cm. Zona amarilla: menor que ${amar} cm. El carro está a ${d} cm. ¿Qué LED prende?`,why};
+}
+function trackSVG(z){
+  const max=60,W=600,x=v=>40+v/max*(W-60);
+  return `<svg viewBox="0 0 ${W} 110" class="g-track" role="img" aria-label="Carro a ${z.d} centímetros del sensor">
+   <rect x="${x(0)}" y="60" width="${x(z.rojo)-x(0)}" height="14" fill="var(--red)" opacity=".75"/>
+   <rect x="${x(z.rojo)}" y="60" width="${x(z.amar)-x(z.rojo)}" height="14" fill="var(--yellow)" opacity=".75"/>
+   <rect x="${x(z.amar)}" y="60" width="${x(max)-x(z.amar)}" height="14" fill="var(--green)" opacity=".75"/>
+   <rect x="8" y="40" width="26" height="40" rx="5" fill="var(--ink)"/>
+   <circle cx="16" cy="52" r="4" fill="var(--panel)"/><circle cx="26" cy="52" r="4" fill="var(--panel)"/>
+   <g transform="translate(${x(z.d)},0)"><rect x="0" y="30" width="52" height="22" rx="7" fill="var(--blue)"/><circle cx="12" cy="54" r="6" fill="var(--ink)"/><circle cx="40" cy="54" r="6" fill="var(--ink)"/></g>
+   <line x1="${x(z.d)}" y1="26" x2="${x(z.d)}" y2="80" stroke="var(--ink)" stroke-dasharray="3 3"/>
+   <text x="${x(z.d)}" y="98" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="var(--ink)">${z.d} cm</text>
+   ${[0,z.rojo,z.amar].map(v=>`<text x="${x(v)}" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="var(--muted)">${v}</text>`).join('')}
+  </svg>`;
+}
+
+/* ---- estado ---- */
+const KEY='ecilab_juego_v2';
+let G={name:'',xp:0,lv:{}}; // lv[id]={first:n,tot:n,stars:n,done:bool}
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.lv)G=s}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(G))}catch(e){}};
+let snd=true,ac=null;
+function beep(ok){if(!snd)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+  const notes=ok?[523,659,784]:[220,165];notes.forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();
+  o.type=ok?'triangle':'sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.08,ac.currentTime+i*.09);
+  g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+i*.09+.18);o.connect(g).connect(ac.destination);o.start(ac.currentTime+i*.09);o.stop(ac.currentTime+i*.09+.2)})}catch(e){}}
+
+const screens=['g-start','g-map','g-play','g-end','g-result'];
+const scr=id=>{screens.forEach(s=>$(s).hidden=s!==id)};
+
+/* ---- inicio ---- */
+if(G.name){$('gName').value=G.name}
+$('gGo').onclick=()=>{const n=$('gName').value.trim();if(n.length<3){$('gName').focus();$('gName').classList.add('g-shake');setTimeout(()=>$('gName').classList.remove('g-shake'),400);return}
+  G.name=n;save();renderMap();scr('g-map')};
+$('gSnd').onclick=()=>{snd=!snd;$('gSnd').textContent='Sonido: '+(snd?'sí':'no');$('gSnd').setAttribute('aria-pressed',snd)};
+
+/* ---- mapa ---- */
+function unlocked(i){return i===0||(G.lv[LEVELS[i-1].id]&&G.lv[LEVELS[i-1].id].done)}
+function renderMap(){
+  $('hName').textContent=G.name;$('hXP').textContent=G.xp;
+  $('gLevels').innerHTML=LEVELS.map((l,i)=>{const r=G.lv[l.id];const u=unlocked(i);
+   return `<button class="g-lv ${r&&r.done?'done':''}" data-i="${i}" ${u?'':'disabled'}>
+     <span class="num">Nivel ${i+1}</span><span class="t">${l.name}</span><span class="s">${u?l.sub:'Termina el nivel anterior'}</span>
+     <span class="st">${r&&r.done?'★'.repeat(r.stars)+'☆'.repeat(3-r.stars):u?'☆☆☆':'🔒'}</span></button>`}).join('');
+  document.querySelectorAll('.g-lv').forEach(b=>b.onclick=()=>startLevel(+b.dataset.i));
+  $('gFinish').hidden=!LEVELS.every(l=>G.lv[l.id]&&G.lv[l.id].done);
+}
+$('gFinish').onclick=showResult;
+
+/* ---- jugar ---- */
+let P=null;
+function startLevel(i){
+  const l=LEVELS[i];
+  const qs=l.gen?Array.from({length:l.n},genZona):shuffle(l.pool).slice(0,l.n);
+  P={i,l,qs,k:0,hearts:3,streak:0,first:0,miss:0};
+  scr('g-play');ask();
+}
+function hearts(){$('pHearts').innerHTML='♥♥♥'.split('').map((h,i)=>`<span class="${i<P.hearts?'':'lost'}">♥</span>`).join('')}
+function ask(){
+  const q=P.qs[P.k];P.answered=false;
+  $('pLevel').textContent=`Nivel ${P.i+1} · ${P.l.name}`;hearts();
+  $('pStreak').textContent=P.streak;$('pXP').textContent=G.xp;
+  $('pBar').style.width=(P.k/P.qs.length*100)+'%';
+  $('pQ').textContent=q.q;$('pFb').hidden=true;$('pNext').hidden=true;
+  $('pVisual').innerHTML=q.type==='zone'?trackSVG(q):'';
+  if(q.type==='line'){
+    $('pOpts').innerHTML=`<div class="g-code" style="grid-column:1/-1">${q.lines.map((t,j)=>
+      t.trim().startsWith('//')?`<div class="g-line cm"><span class="ln">${j+1}</span>${esc(t)}</div>`:
+      `<button class="g-line" data-j="${j}"><span class="ln">${j+1}</span>${esc(t)}</button>`).join('')}</div>`;
+    document.querySelectorAll('.g-line[data-j]').forEach(b=>b.onclick=()=>answer(+b.dataset.j===q.bad,b,document.querySelector(`.g-line[data-j="${q.bad}"]`)));
+  }else{
+    const idx=q.noShuffle?q.ops.map((_,j)=>j):shuffle(q.ops.map((_,j)=>j));
+    $('pOpts').innerHTML=idx.map((j,n)=>`<button class="g-opt" data-j="${j}"><span class="k">${'ABCD'[n]}</span><span>${esc(q.ops[j])}</span></button>`).join('');
+    document.querySelectorAll('.g-opt').forEach(b=>b.onclick=()=>answer(+b.dataset.j===q.ok,b,document.querySelector(`.g-opt[data-j="${q.ok}"]`)));
+  }
+}
+function answer(ok,btn,right){
+  if(P.answered)return;P.answered=true;
+  const q=P.qs[P.k];
+  document.querySelectorAll('#pOpts button').forEach(b=>b.disabled=true);
+  right.classList.add('right');
+  if(ok){P.first++;P.streak++;const pts=10+Math.min(P.streak-1,4)*5;G.xp+=pts;beep(true);
+    $('pFb').className='g-fb ok';$('pFb').innerHTML=`<b>¡Correcto! +${pts} puntos${P.streak>1?' · racha x'+P.streak:''}</b><br>${esc(q.why)}`;
+    if(P.streak>=3)burst(30);
+  }else{btn.classList.add('wrong');P.hearts--;P.streak=0;P.miss++;beep(false);
+    $('game').classList.add('g-shake');setTimeout(()=>$('game').classList.remove('g-shake'),400);
+    $('pFb').className='g-fb no';$('pFb').innerHTML=`<b>No es esa.</b> ${esc(q.why)}`;
+  }
+  hearts();$('pStreak').textContent=P.streak;$('pXP').textContent=G.xp;
+  $('pFb').hidden=false;$('pNext').hidden=false;
+  $('pNext').textContent=P.hearts<=0?'Ver resultado del nivel':P.k===P.qs.length-1?'Terminar nivel':'Siguiente';
+  $('pNext').focus();
+}
+$('pNext').onclick=()=>{
+  if(P.hearts<=0)return endLevel(false);
+  P.k++;if(P.k>=P.qs.length)return endLevel(true);ask();
+};
+function endLevel(won){
+  const l=P.l,prev=G.lv[l.id]||{first:0,tot:0,stars:0,done:false,tries:0};
+  prev.tries=(prev.tries||0)+1;
+  if(!prev.counted){prev.first=P.first;prev.tot=P.qs.length;prev.counted=true} // la nota usa el primer intento
+  if(won){const st=P.miss===0?3:P.miss===1?2:1;prev.stars=Math.max(prev.stars,st);prev.done=true}
+  G.lv[l.id]=prev;save();
+  $('eStars').textContent=won?'★'.repeat(prev.stars)+'☆'.repeat(3-prev.stars):'♡♡♡';
+  $('eTitle').textContent=won?`¡Nivel ${P.i+1} superado!`:'Se acabaron las vidas';
+  $('eMsg').textContent=won?`Acertaste ${P.first} de ${P.qs.length} a la primera.${P.miss?' Repite el nivel si quieres las 3 estrellas.':' ¡Perfecto!'}`:
+    'No pasa nada: lean de nuevo las explicaciones y vuelvan a intentarlo. Las preguntas cambian.';
+  $('eBadge').hidden=!won;$('eBadge').textContent='Insignia: '+l.badge;
+  scr('g-end');if(won)burst(won&&P.miss===0?160:90);
+}
+$('eRetry').onclick=()=>startLevel(P.i);
+$('eMap').onclick=()=>{renderMap();scr('g-map')};
+
+/* ---- resultado ---- */
+function nivel(p){return p>=95?'Superior':p>=80?'Alto':p>=60?'Básico':'Bajo'}
+function showResult(){
+  let f=0,t=0;LEVELS.forEach(l=>{const r=G.lv[l.id];f+=r.first;t+=r.tot});
+  const pct=Math.round(f/t*100);
+  $('rName').textContent=G.name;$('rPct').textContent=pct+'%';$('rLevel').textContent=nivel(pct);$('rXP').textContent=G.xp;
+  $('rTable').innerHTML='<tr><th>Nivel</th><th>Aciertos al primer intento</th><th>Estrellas</th><th>Intentos</th></tr>'+
+   LEVELS.map(l=>{const r=G.lv[l.id];return `<tr><td>${l.name}</td><td>${r.first} de ${r.tot}</td><td>${'★'.repeat(r.stars)}${'☆'.repeat(3-r.stars)}</td><td>${r.tries}</td></tr>`}).join('');
+  const d=new Date();$('rStamp').textContent=`Ecilab Software 8° · ${d.toLocaleDateString('es-CO')} ${d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})} · Código ${(G.name.length*37+G.xp*13+pct).toString(36).toUpperCase()}`;
+  scr('g-result');burst(220);
+}
+$('rBack').onclick=()=>{renderMap();scr('g-map')};
+
+/* ---- confeti ---- */
+const cv=$('confetti'),cx=cv.getContext('2d');let parts=[],raf=0;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function burst(n){if(reduce)return;const r=cv.getBoundingClientRect();cv.width=r.width;cv.height=r.height;
+  const cols=['#d33a2c','#e0a800','#1f9d55','#2f6fd6','#f2a516'];
+  for(let i=0;i<n;i++)parts.push({x:r.width/2+(Math.random()-.5)*r.width*.4,y:r.height*.35,vx:(Math.random()-.5)*9,vy:-Math.random()*9-3,s:4+Math.random()*5,c:cols[rnd(5)],a:Math.random()*6,life:90+rnd(40)});
+  if(!raf)loop()}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);parts=parts.filter(p=>p.life-->0);
+  parts.forEach(p=>{p.vy+=.25;p.x+=p.vx;p.y+=p.vy;p.a+=.2;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);cx.restore()});
+  raf=parts.length?requestAnimationFrame(loop):0;if(!raf)cx.clearRect(0,0,cv.width,cv.height)}
+
+window.ecilabJuego=()=>({G,LEVELS});
+if(G.name){renderMap();scr('g-map')}
+})();
+
+/* ================= INFORME ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const words=t=>(t.trim().match(/\S+/g)||[]).length;
+const esc=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+[['tAprendi','wcAprendi'],['tPropuesta','wcPropuesta']].forEach(([t,w])=>{const el=$(t);
+  const v=S.get('ec_'+t);if(v)el.value=v;
+  const up=()=>{const n=words(el.value);$(w).textContent=n+' palabras'+(n<40?` · faltan ${40-n}`:' · listo');S.set('ec_'+t,el.value)};
+  el.addEventListener('input',up);up()});
+['w1','w2','w3','w4','w5','w6','w7'].forEach(id=>{const el=$(id);if(S.get('ec_'+id)==='1')el.checked=true;el.addEventListener('change',()=>S.set('ec_'+id,el.checked?'1':'0'))});
+$('genInf').onclick=()=>{
+  const J=window.ecilabJuego?window.ecilabJuego():{G:{lv:{}},LEVELS:[]};
+  const lvDone=J.LEVELS.filter(l=>J.G.lv[l.id]&&J.G.lv[l.id].done).length;
+  let f=0,t=0;J.LEVELS.forEach(l=>{const r=J.G.lv[l.id];if(r&&r.counted){f+=r.first;t+=r.tot}});
+  const pct=t?Math.round(f/t*100):0;
+  const casos=['A','B','C','D','E'].filter(k=>R.casos[k]);
+  const chk=['c1','c2','c3','c4','c5','c6'].filter(id=>$(id).checked).length;
+  const lv=document.querySelector('input[name=lv]:checked');
+  const wA=words($('tAprendi').value),wP=words($('tPropuesta').value);
+  const decl=['w1','w2','w3','w4','w5','w6','w7'].map(id=>[id,$(id).checked,$(id).parentNode.textContent.trim()]);
+  const items=[
+   ['Datos personales',!!D,D?`Documento terminado en ${String(D.n).padStart(2,'0')}`:'No sacó sus datos en Inicio'],
+   ['Juego Misión Parqueadero',lvDone===J.LEVELS.length,`${lvDone} de ${J.LEVELS.length} niveles · ${pct}% al primer intento`],
+   ['Estación 1 · Detective de fallas',casos.length===5,`${casos.length} de 5 casos resueltos${casos.length<5?' (faltan: '+['A','B','C','D','E'].filter(k=>!R.casos[k]).join(', ')+')':''}`],
+   ['Estación 2 · Predicciones',(R.pred||0)===5,`${R.pred||0} de 5 predicciones correctas`],
+   ['Estación 2 · Fórmula de Excel',!!R.fx,R.fx?'Fórmula correcta':'Fórmula sin comprobar o incorrecta'],
+   ['Estación 3 · Lista de chequeo del reto',chk===6,`${chk} de 6 puntos marcados`],
+   ['Cierre · ¿Qué aprendí?',wA>=40,`${wA} palabras (mínimo 40)`],
+   ['Cierre · Propuesta de otra solución',wP>=40,`${wP} palabras (mínimo 40)`],
+   ['Cierre · Autoevaluación',!!lv,lv?'Eligió: '+lv.value:'No eligió nivel']
+  ];
+  decl.forEach(([id,ok,txt])=>items.push(['Word · '+txt.replace(/^Pegué en el Word |^Pegué |^Compartí /,m=>m),ok,ok?'Declarado':'No declarado']));
+  const pend=items.filter(i=>!i[1]);
+  const ok=pend.length===0;
+  const name=(J.G&&J.G.name)||'(sin nombre: juegue el juego para registrarlo)';
+  const d=new Date();
+  const code=(name.length*131+pct*7+items.filter(i=>i[1]).length*977+d.getDate()*31).toString(36).toUpperCase();
+  $('infOut').hidden=false;
+  $('infOut').innerHTML=`<div class="inf ${ok?'okk':'bad'}">
+   <div class="inf-status ${ok?'okk':'bad'}">${ok?'✔ COMPLETO: terminó todo lo propuesto':'✘ INCOMPLETO: faltan '+pend.length+' elementos'}</div>
+   <div><b>${esc(name)}</b> · Ecilab Software 8° · Encuentro 5 · ${d.toLocaleDateString('es-CO')} ${d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})} · Código ${code}</div>
+   ${ok?'':`<div class="pend"><b>Lo que falta por hacer:</b><ul>${pend.map(i=>`<li class="n"><span class="m">✘</span><span>${esc(i[0])}: ${esc(i[2])}</span></li>`).join('')}</ul></div>`}
+   <ul>${items.map(i=>`<li class="${i[1]?'y':'n'}"><span class="m">${i[1]?'✔':'✘'}</span><span><b>${esc(i[0])}</b> · ${esc(i[2])}</span></li>`).join('')}</ul>
+   <div><b>¿Qué aprendí?</b><blockquote>${esc($('tAprendi').value||'(vacío)')}</blockquote></div>
+   <div><b>Mi propuesta de otra solución</b><blockquote>${esc($('tPropuesta').value||'(vacío)')}</blockquote></div>
+   <div style="display:flex;gap:10px;flex-wrap:wrap"><button id="cpInf">Copiar informe</button><span class="res" id="cpRes"></span></div>
+   <p class="muted">Tomen captura de este informe y péguenlo al final del Word. También pueden copiarlo y pegarlo en el comentario de la entrega en Classroom.</p>
+  </div>`;
+  const txt=[ok?'COMPLETO':'INCOMPLETO - faltan '+pend.length,`${name} · Ecilab Software 8° · ${d.toLocaleDateString('es-CO')} · Código ${code}`,'',
+    ...(ok?[]:['FALTA:',...pend.map(i=>'- '+i[0]+': '+i[2]),'']),'DETALLE:',...items.map(i=>(i[1]?'[OK] ':'[X] ')+i[0]+': '+i[2]),'',
+    '¿QUÉ APRENDÍ?',$('tAprendi').value,'','MI PROPUESTA',$('tPropuesta').value].join('\n');
+  $('cpInf').onclick=()=>{const r=$('cpRes');navigator.clipboard.writeText(txt).then(()=>{r.className='res ok';r.textContent='Copiado'},()=>{r.className='res no';r.textContent='No se pudo copiar: tomen captura'})};
+  $('infOut').scrollIntoView({behavior:'smooth',block:'start'});
+};
+})();
+</script>
+
+</body></html>
