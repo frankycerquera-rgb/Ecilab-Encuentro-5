@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Taller de Ingenieros Ecilab</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -339,8 +338,10 @@ details.card summary{cursor:pointer;font-family:var(--f-display);font-weight:600
 <section class="view" id="v-codigo" hidden>
   <div class="eyebrow">Referencia · Úsenla en todas las estaciones</div>
   <h1>Código base del parqueadero</h1>
-  <p class="lead">Este es el programa del parqueadero inteligente con sus datos, en código de texto. Antes de las estaciones, revisen que su proyecto de Tinkercad quede igual a este y que pase las tres pruebas de abajo.</p>
-  <div id="needDigitC" class="note">Primero saquen sus datos en <a href="#inicio">Inicio</a>. El código usa sus números.</div>
+  <p class="lead">Este es el programa del parqueadero inteligente en código de texto, con los componentes y las conexiones para el montaje. Antes de las estaciones, revisen que su proyecto de Tinkercad quede igual a este y que pase las tres pruebas de abajo.</p>
+  <div id="needDigitC" class="note"><b>Este código ya sirve para el montaje</b> (zona roja &lt; 10 cm, amarilla &lt; 30 cm, barrera 0°, 45° y 90°). Si escriben los dos últimos números de su documento, el código se cambia a <b>sus</b> números:
+    <div class="digit" style="margin-top:8px"><input type="number" id="digC" min="0" max="99" placeholder="Ej: 47" aria-label="Dos últimos números del documento"><button id="digCBtn">Usar mis datos</button></div></div>
+  <div id="okDigitC" class="note" hidden></div>
 
   <div class="grid2">
     <div class="card">
@@ -369,7 +370,7 @@ details.card summary{cursor:pointer;font-family:var(--f-display);font-weight:600
     </div>
   </div>
 
-  <div id="codigoBody" hidden>
+  <div id="codigoBody">
     <div class="card">
       <h3>3 · El programa</h3>
       <p>En Tinkercad abran <b>Código</b>, elijan <b>Texto</b> en la lista de arriba y escriban o comparen su programa con este. Los números en azul son sus datos.</p>
@@ -804,6 +805,7 @@ function setDigit(n){
 }
 document.getElementById('digBtn').onclick=()=>{const v=parseInt(document.getElementById('dig').value,10);
   if(isNaN(v)||v<0||v>99){alertBox();return}setDigit(v)};
+document.getElementById('digCBtn').onclick=()=>{const v=parseInt(document.getElementById('digC').value,10);if(isNaN(v)||v<0||v>99){document.getElementById('digC').focus();return}setDigit(v)};
 function alertBox(){const b=document.getElementById('misDatos');b.hidden=false;
   document.getElementById('dataBox').innerHTML='<p class="res no">Escriban un número de 0 a 99.</p>'}
 
@@ -890,16 +892,20 @@ function renderReto(){
   document.getElementById('ra3').textContent=`Abierta · ${D.abierto}°`;
   document.getElementById('retoData').textContent=`Sus datos: parpadeo de ${D.t} ms (documento terminado en ${String(D.n).padStart(2,'0')}).`;
 }
+const DG={n:-1,rojo:10,amarillo:30,cerrado:0,medio:45,abierto:90,t:300};
 function renderCodigo(){
-  document.getElementById('needDigitC').hidden=true;document.getElementById('codigoBody').hidden=false;
-  document.getElementById('codText').innerHTML=REF.codigoHTML(REF.lineas(D,false));
-  const ds=[D.rojo-2,Math.floor((D.rojo+D.amarillo)/2)+1,D.amarillo+20];
+  const X=D||DG;
+  document.getElementById('needDigitC').hidden=!!D;
+  const ok=document.getElementById('okDigitC');ok.hidden=!D;
+  if(D)ok.innerHTML=`<b>Código con sus datos</b> (documento terminado en ${String(D.n).padStart(2,'0')}): zona roja &lt; ${D.rojo} cm, amarilla &lt; ${D.amarillo} cm, barrera ${D.cerrado}°, ${D.medio}° y ${D.abierto}°.`;
+  document.getElementById('codText').innerHTML=REF.codigoHTML(REF.lineas(X,false));
+  const ds=[X.rojo-2,Math.floor((X.rojo+X.amarillo)/2)+1,X.amarillo+20];
   document.getElementById('codTest').innerHTML='<tr><th>Distancia</th><th>Zona</th><th>LED encendido</th><th>Servo</th><th>LED blanco (barrera)</th></tr>'+
-    ds.map(d=>{const e=REF.esperado(D,d);return `<tr><td style="font-family:var(--f-mono)"><b>${d} cm</b></td><td>${e.zona}</td><td>${e.led}</td><td>${e.ang}°</td><td>${e.bar}</td></tr>`}).join('');
-  document.getElementById('codeR').innerHTML=REF.codigoHTML(REF.lineas(D,true,true));
-  document.getElementById('serEj').textContent=String(Math.max(2,D.rojo-2));
+    ds.map(d=>{const e=REF.esperado(X,d);return `<tr><td style="font-family:var(--f-mono)"><b>${d} cm</b></td><td>${e.zona}</td><td>${e.led}</td><td>${e.ang}°</td><td>${e.bar}</td></tr>`}).join('');
+  document.getElementById('codeR').innerHTML=REF.codigoHTML(REF.lineas(X,true,true));
+  document.getElementById('serEj').textContent=String(Math.max(2,X.rojo-2));
 }
-document.getElementById('codCopy').onclick=()=>{const r=document.getElementById('codCopyRes');const t=REF.texto(D,false);
+document.getElementById('codCopy').onclick=()=>{const r=document.getElementById('codCopyRes');const t=REF.texto(D||DG,false);
   const sel=()=>{const rg=document.createRange();rg.selectNodeContents(document.getElementById('codText'));const se=getSelection();se.removeAllRanges();se.addRange(rg)};
   try{navigator.clipboard.writeText(t).then(()=>{r.className='res ok';r.textContent='Copiado.'},()=>{sel();r.className='res no';r.textContent='Quedó seleccionado: usen Ctrl+C.'})}catch(e){sel();r.className='res no';r.textContent='Quedó seleccionado: usen Ctrl+C.'}};
 
@@ -909,6 +915,7 @@ document.getElementById('codCopy').onclick=()=>{const r=document.getElementById(
     if(el.type==='radio')['lv1','lv2','lv3','lv4'].forEach(x=>S.set('ec_'+x,document.getElementById(x).checked?'1':'0'));
     else S.set('ec_'+id,el.checked?'1':'0')})});
 
+renderCodigo();
 const saved=S.get('ecilab_cierre_dig');if(saved!==null&&saved!=='')setDigit(parseInt(saved,10));
 show(location.hash.slice(1));
 /* ================= JUEGO: MISIÓN PARQUEADERO ================= */
@@ -1205,5 +1212,3 @@ $('genInf').onclick=()=>{
 };
 })();
 </script>
-
-</body></html>
